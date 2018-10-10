@@ -3,26 +3,14 @@
 
 #include "boot.h"
 
-#define MAX_LINES       25
-#define MAX_COLUMNS     80
-#define MAX_OFFSET      2000 //25 lines * 80 chars
+#define START_CONSOLE   0x000B8000
+#define END_CONSOLE     0x000B8FA0
+#define SECOND_ROW      0x000B80A0
+#define END_SECOND_ROW  0x000B8F00
 
-
-#pragma pack(push)
-#pragma pack(1)
-typedef struct _SCREEN
-{
-    char c;
-    BYTE color;
-}SCREEN, *PSCREEN;
-#pragma pack(pop)
-
-
-void SetColor(BYTE Color);
-void ClearScreen();
-void PutChar(char C, int Pos);
-void PutString(char* String, int Pos);
-void PutStringLine(char* String, int Line);
-void HelloBoot();
+void printf(char* format, ...);
+void printf_f(const char* format, void* argv[]);
+int sprintf_f(char* str, const char* format, void* argv[]);
+void sprintf(char* str, const char* format, ...);
 
 #endif // _SCREEN_H_

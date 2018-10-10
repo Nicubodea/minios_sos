@@ -6,7 +6,12 @@ VOID SosEntryPoint(
     VOID
     )
 {
-    HelloBoot(6);
-
-
+    /*printf("Hello world, we are here at %x, %d %s", SosEntryPoint, 16, "hello");
+    printf("Hello world, we are here at %x, %d %s", SosEntryPoint, 16, "hello");
+    printf("Hello world, we are here at %x, %d %s", SosEntryPoint, 16, "hello");
+    printf("Hello world, we are here at %x, %d %s", SosEntryPoint, 16, "hello");
+    printf("Hello world, we are here at %x, %d %s\n\n\n", SosEntryPoint, 16, "hello");
+    printf("Hello world, we are here at %x, %d %s", SosEntryPoint, 16, "hello");
+    printf("Hello world, we are here at %x, %d %s", SosEntryPoint, 16, "hello");
+    */
 }

@@ -54,3 +54,4 @@ int/
 bin/
 *.VC.db
 *.VC.*
+.vs/
