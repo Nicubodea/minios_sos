@@ -226,6 +226,7 @@
     <ClInclude Include="boot.h" />
     <ClInclude Include="defs.h" />
     <ClInclude Include="interrupt.h" />
+    <ClInclude Include="keyboard.h" />
     <ClInclude Include="mmap.h" />
     <ClInclude Include="paging.h" />
     <ClInclude Include="pic.h" />
@@ -235,6 +236,7 @@
   <ItemGroup>
     <ClCompile Include="apic.c" />
     <ClCompile Include="interrupt.c" />
+    <ClCompile Include="keyboard.c" />
     <ClCompile Include="main.c" />
     <ClCompile Include="mmap.c" />
     <ClCompile Include="paging.c" />

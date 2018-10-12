@@ -34,7 +34,7 @@ SosInitInterrupts(
     VOID
 )
 {
-    gIdtr.Limit = 256;
+    gIdtr.Limit = 256 * 16;
     gIdtr.Base = gIsrs;
 
     __lidt(&gIdtr);

@@ -3,6 +3,12 @@
 
 #include "sosdefines.h"
 
+#define INTERRUPT_PAGE_FAULT    0xE
+#define INTERRUPT_KEYBOARD      0x21
+
+#define TYPE_TRAP               0xF
+#define TYPE_INTERRUPT          0xE
+
 typedef struct _CONTEXT {
 
     QWORD RegRax;
@@ -21,12 +27,12 @@ typedef struct _CONTEXT {
     QWORD RegR14;
     QWORD RegR15;
     QWORD InterruptNumber;
-    QWORD ErrorCode;
     QWORD RegRip;
     QWORD RegCs;
     QWORD RegRflags;
     QWORD RegRsp;
     QWORD RegSs;
+    QWORD Dummy;
 
 } CONTEXT, *PCONTEXT;
 

@@ -3,9 +3,8 @@
 #include "sosdefines.h"
 #include "apic.h"
 #include "pic.h"
-
 #include "interrupt.h"
-
+#include "keyboard.h"
 
 
 VOID
@@ -26,12 +25,34 @@ Cplm(
 )
 {
     UNREFERENCED_PARAMETER(Context);
-    printf("hERE");
+    
+
+    printf("ISR: %x\n", SosPicGetIsr());
+
+    printf("IRR: %x\n", SosPicGetIsr());
 
     SosPicSendEoi(1);
 
-    printf("eoi sent");
-    //__halt();
+    printf("eoi sent\n");
+
+    printf("ISR: %x\n", SosPicGetIsr());
+
+    printf("IRR: %x\n", SosPicGetIsr());
+
+    printf("flags: %x\n", Context->RegRflags);
+
+    BYTE b = __inbyte(0x60);
+    printf("pressed: %x\n", b);
+//__halt();
+}
+
+int Abc(
+)
+{
+    int x = 0;
+    x = x + 2;
+
+    return x;
 }
 
 VOID SosEntryPoint(
@@ -56,7 +77,7 @@ VOID SosEntryPoint(
 
     printf("[INFO] Local apic id: %d\n", SosApicGetCurrentApicId());
 
-    SosInitializePic(0, 0);
+    SosInitializePic(PIC_MASTER_BASE, PIC_SLAVE_BASE);
 
     // Disable all interrupts
     for (BYTE i = 0; i < 16; i++)
@@ -65,16 +86,16 @@ VOID SosEntryPoint(
     }
 
     // enable IRQ1 - the keyboard interrupt
-    SosPicClearIrqMask(1);
+    SosPicClearIrqMask(PIC_IRQ1_KEYBOARD);
 
     printf("[INFO] Init interrupts\n");
 
     SosInitInterrupts();
 
-    SosRegisterInterrupt(14, TestPF, 0xF);
-    SosRegisterInterrupt(0x21, Cplm, 0xE);
+    SosRegisterInterrupt(INTERRUPT_PAGE_FAULT, TestPF, TYPE_TRAP);
+    SosRegisterInterrupt(INTERRUPT_KEYBOARD, SosHandleKeyboardEvent, TYPE_INTERRUPT);
 
-    //*(PQWORD)(0xc0c0c0c0c0) = 69;
+    __sti();
 
     while (TRUE)
     {

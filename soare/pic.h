@@ -28,6 +28,11 @@
 
 #define PIC_EOI         0x20
 
+#define PIC_IRQ1_KEYBOARD   1
+
+#define PIC_MASTER_BASE     0x20
+#define PIC_SLAVE_BASE      0x28
+
 VOID
 SosInitializePic(
     BYTE MasterRemapOffset,

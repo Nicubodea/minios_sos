@@ -222,9 +222,6 @@ gMultiBootEntryPoint:
 	MOV RSP, KERNEL_BASE_VIRTUAL_64
 	ADD RSP, 0x400000 ; 2 MB stack will do 
 
-    ;; enable interrupts, we'll need them 
-    STI
-
     CALL SosEntryPoint
     
     CLI
@@ -273,6 +270,7 @@ global AsmHandler
 
 
 GenericAsmHandler:
+cli
 push r15
 push r14
 push r13
@@ -315,7 +313,7 @@ pop r14
 pop r15
 
 add rsp, 8
-
+sti
 iretq
 
 ;; We need to keep a padding so that we are sure that instructions of the form `e9 xx xx xx xx` are generated at jumps
