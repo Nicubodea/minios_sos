@@ -42,7 +42,8 @@ SosInitInterrupts(
 BOOLEAN
 SosRegisterInterrupt(
     DWORD InterruptNumber,
-    PFUNC_SosInterruptHandler Handler
+    PFUNC_SosInterruptHandler Handler,
+    BYTE Type
     );
 
 VOID

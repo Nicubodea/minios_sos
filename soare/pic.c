@@ -1,4 +1,5 @@
 #include "pic.h"
+#include "screen.h"
 
 VOID
 SosInitializePic(
@@ -77,6 +78,7 @@ SosPicClearIrqMask(
     }
 
     value = __inbyte(port) & (~(1 << IrqLine));
+    printf("value is %x\n", value);
     __outbyte(port, value);
 }
 

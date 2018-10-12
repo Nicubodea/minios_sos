@@ -41,11 +41,14 @@ SosInitInterrupts(
 }
 
 extern VOID AsmHandler();
+extern VOID AsmExitTrapHandler();
+extern VOID AsmExitInterruptHandler();
 
 BOOLEAN
 SosRegisterInterrupt(
     DWORD InterruptNumber,
-    PFUNC_SosInterruptHandler Handler
+    PFUNC_SosInterruptHandler Handler,
+    BYTE Type
 )
 {
     QWORD oldAddr = 0;
@@ -60,15 +63,16 @@ SosRegisterInterrupt(
 
     QWORD pAsmHandler = (QWORD)AsmHandler + INTERRUPT_HANDLE_SIZE * InterruptNumber;
 
+    printf("[INFO] %x\n", pAsmHandler);
+
     gIsrs[InterruptNumber].Bits0_15 = (QWORD)pAsmHandler & 0xFFFF;
     gIsrs[InterruptNumber].Bits16_31 = ((QWORD)pAsmHandler & 0xFFFF0000) >> 16;
     gIsrs[InterruptNumber].Bits32_63 = (((QWORD)pAsmHandler) & 0xFFFFFFFF00000000) >> 32LL;
 
     gIsrs[InterruptNumber].Selector = 0x18;
-    gIsrs[InterruptNumber].TypeAttr = 0b10001111;
+    gIsrs[InterruptNumber].TypeAttr = 0b10000000 | Type;
 
     gDescriptors[InterruptNumber].Handler = Handler;
-
     
     return TRUE;
 }

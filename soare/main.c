@@ -20,6 +20,20 @@ TestPF(
     __halt();
 }
 
+VOID
+Cplm(
+    PCONTEXT Context
+)
+{
+    UNREFERENCED_PARAMETER(Context);
+    printf("hERE");
+
+    SosPicSendEoi(1);
+
+    printf("eoi sent");
+    //__halt();
+}
+
 VOID SosEntryPoint(
     VOID
     )
@@ -42,17 +56,25 @@ VOID SosEntryPoint(
 
     printf("[INFO] Local apic id: %d\n", SosApicGetCurrentApicId());
 
-    SosInitializePic(32, 0x70);
+    SosInitializePic(0, 0);
 
+    // Disable all interrupts
+    for (BYTE i = 0; i < 16; i++)
+    {
+        SosPicSetIrqMask(i);
+    }
+
+    // enable IRQ1 - the keyboard interrupt
     SosPicClearIrqMask(1);
 
     printf("[INFO] Init interrupts\n");
 
     SosInitInterrupts();
 
-    SosRegisterInterrupt(14, TestPF);
+    SosRegisterInterrupt(14, TestPF, 0xF);
+    SosRegisterInterrupt(0x21, Cplm, 0xE);
 
-    *(PQWORD)(0xc0c0c0c0c0) = 69;
+    //*(PQWORD)(0xc0c0c0c0c0) = 69;
 
     while (TRUE)
     {

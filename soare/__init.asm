@@ -222,6 +222,9 @@ gMultiBootEntryPoint:
 	MOV RSP, KERNEL_BASE_VIRTUAL_64
 	ADD RSP, 0x400000 ; 2 MB stack will do 
 
+    ;; enable interrupts, we'll need them 
+    STI
+
     CALL SosEntryPoint
     
     CLI
@@ -312,7 +315,6 @@ pop r14
 pop r15
 
 add rsp, 8
-add rsp, 8 ;; Error code ...
 
 iretq
 
@@ -372,4 +374,55 @@ push 0x10
 jmp GenericAsmHandler
 
 push 0x11
+jmp GenericAsmHandler
+
+push 0x12
+jmp GenericAsmHandler
+
+push 0x13
+jmp GenericAsmHandler
+
+push 0x14
+jmp GenericAsmHandler
+
+push 0x15
+jmp GenericAsmHandler
+
+push 0x16
+jmp GenericAsmHandler
+
+push 0x17
+jmp GenericAsmHandler
+
+push 0x18
+jmp GenericAsmHandler
+
+push 0x19
+jmp GenericAsmHandler
+
+push 0x1a
+jmp GenericAsmHandler
+
+push 0x1b
+jmp GenericAsmHandler
+
+push 0x1c
+jmp GenericAsmHandler
+
+push 0x1d
+jmp GenericAsmHandler
+
+push 0x1e
+jmp GenericAsmHandler
+
+push 0x1f
+jmp GenericAsmHandler
+
+push 0x20
+jmp GenericAsmHandler
+
+push 0x21
+jmp GenericAsmHandler
+
+push 0x22
 jmp GenericAsmHandler
