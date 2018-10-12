@@ -63,8 +63,6 @@ SosRegisterInterrupt(
 
     QWORD pAsmHandler = (QWORD)AsmHandler + INTERRUPT_HANDLE_SIZE * InterruptNumber;
 
-    printf("[INFO] %x\n", pAsmHandler);
-
     gIsrs[InterruptNumber].Bits0_15 = (QWORD)pAsmHandler & 0xFFFF;
     gIsrs[InterruptNumber].Bits16_31 = ((QWORD)pAsmHandler & 0xFFFF0000) >> 16;
     gIsrs[InterruptNumber].Bits32_63 = (((QWORD)pAsmHandler) & 0xFFFFFFFF00000000) >> 32LL;
@@ -94,6 +92,7 @@ SosDumpInterruptContext(
     PCONTEXT Context
 )
 {
+    printf("EXCEPTION #%x, error code: %x\n", Context->InterruptNumber, Context->ErrorCode);
     printf("~~~~DUMPING TRAPFRAME~~~~\n");
     printf("Rip: 0x%x\n", Context->RegRip);
     printf("Cs: 0x%x\n", Context->RegCs);

@@ -5,55 +5,8 @@
 #include "pic.h"
 #include "interrupt.h"
 #include "keyboard.h"
+#include "interrupt_handlers.h"
 
-
-VOID
-TestPF(
-    PCONTEXT Context
-)
-{
-    printf("INTERRUPT #%x arrived: \n", Context->InterruptNumber);
-    
-    SosDumpInterruptContext(Context);
-
-    __halt();
-}
-
-VOID
-Cplm(
-    PCONTEXT Context
-)
-{
-    UNREFERENCED_PARAMETER(Context);
-    
-
-    printf("ISR: %x\n", SosPicGetIsr());
-
-    printf("IRR: %x\n", SosPicGetIsr());
-
-    SosPicSendEoi(1);
-
-    printf("eoi sent\n");
-
-    printf("ISR: %x\n", SosPicGetIsr());
-
-    printf("IRR: %x\n", SosPicGetIsr());
-
-    printf("flags: %x\n", Context->RegRflags);
-
-    BYTE b = __inbyte(0x60);
-    printf("pressed: %x\n", b);
-//__halt();
-}
-
-int Abc(
-)
-{
-    int x = 0;
-    x = x + 2;
-
-    return x;
-}
 
 VOID SosEntryPoint(
     VOID
@@ -92,7 +45,8 @@ VOID SosEntryPoint(
 
     SosInitInterrupts();
 
-    SosRegisterInterrupt(INTERRUPT_PAGE_FAULT, TestPF, TYPE_TRAP);
+    SosInitInterruptHandlers();
+
     SosRegisterInterrupt(INTERRUPT_KEYBOARD, SosHandleKeyboardEvent, TYPE_INTERRUPT);
 
     __sti();

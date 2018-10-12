@@ -38,6 +38,9 @@
     <ClCompile Include="keyboard.c">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="interrupt_handlers.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="boot.h">
@@ -68,6 +71,9 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="keyboard.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="interrupt_handlers.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

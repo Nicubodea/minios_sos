@@ -270,7 +270,27 @@ global AsmHandler
 
 
 GenericAsmHandler:
-cli
+
+cmp qword [rsp], 8
+je _put_error_code
+cmp qword [rsp], 10
+jnae _skip_error_code
+cmp qword [rsp], 14
+jnbe _skip_error_code
+
+_put_error_code:
+	push rcx
+	push rdx
+	mov rcx, [rsp+0x18]
+	mov rdx, [rsp+0x10]
+	mov [rsp+0x18], rdx
+	mov [rsp+0x10], rcx
+	pop rdx
+	pop rcx
+jmp _continue
+_skip_error_code:
+	push 0		;; dummy error code
+_continue:
 push r15
 push r14
 push r13
@@ -287,7 +307,7 @@ push rcx
 push rbx
 push rax
 
-mov rcx, [rsp+0x78]
+mov rcx, [rsp+0x80]
 mov rdx, rsp
 
 sub rsp, 0x20
@@ -312,8 +332,8 @@ pop r13
 pop r14
 pop r15
 
-add rsp, 8
-sti
+;; Pop the error code + interrupt number
+add rsp, 16 
 iretq
 
 ;; We need to keep a padding so that we are sure that instructions of the form `e9 xx xx xx xx` are generated at jumps
