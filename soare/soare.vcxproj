@@ -222,15 +222,23 @@
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClInclude Include="apic.h" />
     <ClInclude Include="boot.h" />
     <ClInclude Include="defs.h" />
+    <ClInclude Include="interrupt.h" />
+    <ClInclude Include="mmap.h" />
     <ClInclude Include="paging.h" />
+    <ClInclude Include="pic.h" />
     <ClInclude Include="screen.h" />
     <ClInclude Include="sosdefines.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="apic.c" />
+    <ClCompile Include="interrupt.c" />
     <ClCompile Include="main.c" />
+    <ClCompile Include="mmap.c" />
     <ClCompile Include="paging.c" />
+    <ClCompile Include="pic.c" />
     <ClCompile Include="screen.c" />
   </ItemGroup>
   <ItemGroup>

@@ -23,6 +23,18 @@
     <ClCompile Include="paging.c">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="apic.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="mmap.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="pic.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="interrupt.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="boot.h">
@@ -38,6 +50,18 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="paging.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="apic.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="mmap.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="pic.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="interrupt.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

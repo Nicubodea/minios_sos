@@ -1,6 +1,8 @@
 #ifndef _SOS_DEFINES_H_
 #define _SOS_DEFINES_H_
 
+#pragma warning (disable: 4005)
+
 typedef void VOID;
 typedef unsigned char BYTE;
 typedef unsigned short WORD;
@@ -12,6 +14,15 @@ typedef BYTE* PBYTE;
 typedef WORD* PWORD;
 typedef DWORD* PDWORD;
 typedef QWORD* PQWORD;
+
+typedef BYTE BOOLEAN;
+typedef BOOLEAN* PBOOLEAN;
+
+#define TRUE 1
+#define FALSE 0
+#define NULL ((PVOID)0)
+
+#define UNREFERENCED_PARAMETER(a) a
 
 #define CR0_PE          (1<<0)
 #define CR0_MP          (1<<1)
@@ -48,6 +59,7 @@ typedef QWORD* PQWORD;
 #define CR4_PKE         (1<<22)
 
 #define IA32_MSR_EFER   0xC0000080
+#define IA32_APIC_BASE  0x1B
 
 #define EFER_SCE        (1<<0)
 #define EFER_LME        (1<<8)

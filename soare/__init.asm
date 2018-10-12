@@ -183,6 +183,7 @@ gMultiBootEntryPoint:
 	OR		EAX, 0x80000000
 	MOV		CR0, EAX
 
+
 	;; now we are in 64 bits compatibility mode (i think)
 
 	;; Put the 64 bit data selector in our segments
@@ -219,14 +220,9 @@ gMultiBootEntryPoint:
 	RET
 
 	MOV RSP, KERNEL_BASE_VIRTUAL_64
-	ADD RSP, 0x400000 ; 2 MB stack will do for now
+	ADD RSP, 0x400000 ; 2 MB stack will do 
 
     CALL SosEntryPoint
-    
-	MOV     DWORD [0x000B80FC], ' 0#0'
-    MOV     DWORD [0x000B8100], 'S0E0'       
-    MOV     DWORD [0x000B8104], 'C0U0'       
-    MOV     DWORD [0x000B8108], 'R0E0'
     
     CLI
     HLT
@@ -268,3 +264,112 @@ __magic:
     XCHG    BX,BX
     RET
 
+    
+extern SosGenericInterruptHandler
+global AsmHandler
+
+
+GenericAsmHandler:
+push r15
+push r14
+push r13
+push r12
+push r11
+push r10
+push r9
+push r8
+push rbp
+push rdi
+push rsi
+push rdx
+push rcx
+push rbx
+push rax
+
+mov rcx, [rsp+0x78]
+mov rdx, rsp
+
+sub rsp, 0x20
+
+call SosGenericInterruptHandler
+
+add rsp, 0x20
+
+pop rax
+pop rbx
+pop rcx
+pop rdx
+pop rsi
+pop rdi
+pop rbp
+pop r8
+pop r9
+pop r10
+pop r11
+pop r12
+pop r13
+pop r14
+pop r15
+
+add rsp, 8
+add rsp, 8 ;; Error code ...
+
+iretq
+
+;; We need to keep a padding so that we are sure that instructions of the form `e9 xx xx xx xx` are generated at jumps
+times 0x100 db 'G'
+
+AsmHandler:
+push 0x0
+jmp GenericAsmHandler
+
+push 0x1
+jmp GenericAsmHandler
+
+push 0x2
+jmp GenericAsmHandler
+
+push 0x3
+jmp GenericAsmHandler
+
+push 0x4
+jmp GenericAsmHandler
+
+push 0x5
+jmp GenericAsmHandler
+
+push 0x6
+jmp GenericAsmHandler
+
+push 0x7
+jmp GenericAsmHandler
+
+push 0x8
+jmp GenericAsmHandler
+
+push 0x9
+jmp GenericAsmHandler
+
+push 0xa
+jmp GenericAsmHandler
+
+push 0xb
+jmp GenericAsmHandler
+
+push 0xc
+jmp GenericAsmHandler
+
+push 0xd
+jmp GenericAsmHandler
+
+push 0xe
+jmp GenericAsmHandler
+
+push 0xf
+jmp GenericAsmHandler
+
+push 0x10
+jmp GenericAsmHandler
+
+push 0x11
+jmp GenericAsmHandler

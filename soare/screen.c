@@ -208,6 +208,7 @@ int sprintf_f(char* str, const char* format, void* argv[])
 
 char* address = (char*)START_CONSOLE;
 int currentColumn = 0;
+char gBuff[3841];
 
 void printf_f(const char* format, void* argv[])
 {
@@ -223,7 +224,8 @@ void printf_f(const char* format, void* argv[])
         if ((unsigned __int64)(PBYTE)addr >= END_CONSOLE)
         {
 
-            memcpy((void*)SECOND_ROW, (void*)START_CONSOLE, 3840);
+            memcpy(gBuff, SECOND_ROW, 3840);
+            memcpy((void*)START_CONSOLE, (void*)gBuff, 3840);
             for (unsigned __int64 index = END_SECOND_ROW; index < END_CONSOLE; index += 2)
             {
                 sprintf_f((char*)index, (char*)" \7", NULL);
