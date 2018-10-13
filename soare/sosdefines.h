@@ -76,4 +76,6 @@ typedef BOOLEAN* PBOOLEAN;
 #define PAGE_OFFSET             0xFFF
 #define PAGE_SIZE               0x1000
 
+#define ARRAYSIZE(x)            sizeof(x)/sizeof(x[0])
+
 #endif
