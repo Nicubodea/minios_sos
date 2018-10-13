@@ -228,6 +228,7 @@
     <ClInclude Include="interrupt.h" />
     <ClInclude Include="interrupt_handlers.h" />
     <ClInclude Include="keyboard.h" />
+    <ClInclude Include="keyboard_state_machine.h" />
     <ClInclude Include="mmap.h" />
     <ClInclude Include="paging.h" />
     <ClInclude Include="pic.h" />

@@ -76,6 +76,9 @@
     <ClInclude Include="interrupt_handlers.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="keyboard_state_machine.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="postbuild.cmd">
