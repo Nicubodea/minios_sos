@@ -41,8 +41,6 @@ SosInitInterrupts(
 }
 
 extern VOID AsmHandler();
-extern VOID AsmExitTrapHandler();
-extern VOID AsmExitInterruptHandler();
 
 BOOLEAN
 SosRegisterInterrupt(

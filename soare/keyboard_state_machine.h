@@ -2,8 +2,7 @@
 #define _KEYBOARD_STATE_MACHINE_H_
 
 #include "sosdefines.h"
-
-#define KEYBOARD_MAX_SCAN_CODE_SIZE 6
+#include "keyboard.h"
 
 typedef enum _KEYBOARD_STATE
 {
@@ -19,14 +18,6 @@ typedef struct _SCANCODE_STATE
     KEYBOARD_STATE NeededState;
     KEYBOARD_STATE ResultingState;
 } SCANCODE_STATE, *PSCANCODE_STATE;
-
-typedef struct _SCANCODE_TO_KEY
-{
-    BYTE ScanCodeBytes[KEYBOARD_MAX_SCAN_CODE_SIZE];
-    WORD KeyCode;
-} SCANCODE_TO_KEY, *PSCANCODE_TO_KEY;
-
-
 
 static SCANCODE_STATE gStateMachine[] = 
 {

@@ -6,9 +6,18 @@
 #include "interrupt.h"
 #include "keyboard.h"
 #include "interrupt_handlers.h"
+#include "console.h"
 
+VOID
+TestKey(
+    PKEYBOARD_EVENT Event
+)
+{
+    printf("%d (%d), ", Event->LastKeyboardEvent.KeyCode, Event->LastKeyboardEvent.Pressed);
+}
 
-VOID SosEntryPoint(
+VOID 
+SosEntryPoint(
     VOID
     )
 {
@@ -49,7 +58,13 @@ VOID SosEntryPoint(
 
     SosRegisterInterrupt(INTERRUPT_KEYBOARD, SosHandleKeyboardEvent, TYPE_INTERRUPT);
 
+    //SosKeyboardAttachEventHandler(TestKey);
+
+    SosConsoleInitConsole();
+
     __sti();
+
+    SosConsoleStartConsole();
 
     while (TRUE)
     {

@@ -1,7 +1,22 @@
 #include "screen.h"
 
-#define _Bnd(X, bnd)            (((sizeof (X)) + (bnd)) & (~(bnd)))
-#define va_start(ap, A)         (void) ((ap) = (((char *) &(A)) + (_Bnd (A,sizeof(long long)-1))))
+void* memcpy(void* dest, void* source, size_t num)
+{
+    size_t i = 0;
+    while (i < num)
+    {
+        ((PBYTE)dest)[i] = ((PBYTE)source)[i];
+        i++;
+    }
+    return dest;
+}
+
+int strlen(const char* x)
+{
+    int i = 0;
+    while (x[i++] != '\0');
+    return i-1;
+}
 
 void printf(char* format, ...)
 {
@@ -22,6 +37,7 @@ void printf(char* format, ...)
     printf_f(format, argv);
 
 }
+
 
 void sprintf(char* str, const char* format, ...)
 {
@@ -95,7 +111,7 @@ int sprintf_f(char* str, const char* format, void* argv[])
             else if ('s' == frm)
             {
                 char* x = (*((char**)argv[counterArgs]));
-                for (j = 0; j < strlen(x); j++)
+                for (j = 0; j < (unsigned int)strlen(x); j++)
                 {
                     str[cBuffer] = x[j];
                     cBuffer++;
@@ -224,7 +240,7 @@ void printf_f(const char* format, void* argv[])
         if ((unsigned __int64)(PBYTE)addr >= END_CONSOLE)
         {
 
-            memcpy(gBuff, SECOND_ROW, 3840);
+            memcpy((void*)gBuff, (void*)SECOND_ROW, 3840);
             memcpy((void*)START_CONSOLE, (void*)gBuff, 3840);
             for (unsigned __int64 index = END_SECOND_ROW; index < END_CONSOLE; index += 2)
             {
@@ -257,4 +273,21 @@ void printf_f(const char* format, void* argv[])
             currentColumn = 0;
     }
     address = addr;
+}
+
+void printf_delete_last_character()
+{
+    if (address == (char*)START_CONSOLE)
+    {
+        return;
+    }
+    address-=2;
+    char* addr = address;
+    char aux[2];
+    aux[0] = ' ';
+    aux[1] = '\0';
+    sprintf_f(addr, aux, NULL);
+    addr++;
+    sprintf_f(addr, (char*)"\7", NULL);
+    addr++;
 }
