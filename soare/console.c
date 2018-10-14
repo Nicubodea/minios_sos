@@ -239,7 +239,6 @@ _SosConsoleReceiveKeyboardEvent(
             return;
         }
 
-
         if (gCapsLock && 
             gToPrintingCharacterShift[Event->LastKeyboardEvent.KeyCode] >= 'A' && 
             gToPrintingCharacterShift[Event->LastKeyboardEvent.KeyCode] <= 'Z')
@@ -255,6 +254,12 @@ _SosConsoleReceiveKeyboardEvent(
     }
     else
     {
+        if (Event->LastKeyboardEvent.KeyCode >= sizeof(gToPrintingCharacter) ||
+            gToPrintingCharacter[Event->LastKeyboardEvent.KeyCode] == 0)
+        {
+            return;
+        }
+
         if (gCapsLock &&
             gToPrintingCharacter[Event->LastKeyboardEvent.KeyCode] >= 'a' &&
             gToPrintingCharacter[Event->LastKeyboardEvent.KeyCode] <= 'z')
@@ -399,7 +404,7 @@ SosConsoleStartConsole(
         }
         else
         {
-            printf("Unknown command\n");
+            printf("Unknown command: %s\n", buffer);
         }
     }
 
