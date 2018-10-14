@@ -282,6 +282,11 @@ void printf_delete_last_character()
         return;
     }
     address-=2;
+    currentColumn--;
+    if (currentColumn < 0)
+    {
+        currentColumn = 79;
+    }
     char* addr = address;
     char aux[2];
     aux[0] = ' ';

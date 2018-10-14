@@ -293,6 +293,8 @@ SosConsoleRead(
     va_start(x, format);
     PVOID argv[101];
     DWORD args = 0;
+    DWORD argCurrent = 0;
+    DWORD j = 0, k = 0;
 
     gReadEnded = FALSE;
     while (gReadEnded == FALSE)
@@ -311,11 +313,48 @@ SosConsoleRead(
             x = x + 8;
         }
     }
-    // for now ...
-    memcpy(*(PBYTE*)argv[0], (PVOID)gConsoleBuffer, gBufferSize);
 
-    (*(PBYTE*)argv[0])[gBufferSize] = 0;
+    for (DWORD i = 0; format[i] != '\0'; i++)
+    {
+        if (format[i] == '%')
+        {
+            if (format[i + 1] == 's')
+            {
+                k = 0;
+                while (j < gBufferSize && gConsoleBuffer[j] == ' ')
+                {
+                    j++;
+                }
+                while (j < gBufferSize && gConsoleBuffer[j] != ' ')
+                {
+                    (*(PBYTE*)argv[argCurrent])[k] = gConsoleBuffer[j];
+                    k++;
+                    j++;
+                }
 
+                (*(PBYTE*)argv[argCurrent])[k] = 0;
+            }
+            if (format[i + 1] == 'd')
+            {
+                DWORD number = 0;
+                while (j < gBufferSize && (gConsoleBuffer[j] < '0' || gConsoleBuffer[j] > '9'))
+                {
+                    j++;
+                }
+                while (j < gBufferSize && gConsoleBuffer[j] >='0' && gConsoleBuffer[j] <= '9')
+                {
+                    number = number * 10 + gConsoleBuffer[j] - '0';
+                    j++;
+                }
+
+                **(PDWORD*)(argv[argCurrent]) = number;
+            }
+
+            i++;
+            argCurrent++;
+        }
+    }
+    
     gBufferSize = 0;
 }
 
@@ -326,10 +365,12 @@ SosConsoleStartConsole(
 )
 {
     BYTE buffer[1024] = { 0 };
+    BYTE buff2[10] = { 0 };
+    DWORD x;
     while (TRUE)
     {
-        SosConsoleRead("%s", buffer);
-        printf("%s\n", buffer);
+        SosConsoleRead("%s %d %s", buffer, &x, buff2);
+        printf("%s %d %s\n", buffer, x, buff2);
     }
 
 }
