@@ -1,5 +1,22 @@
 #include "screen.h"
 
+int strcmp(char* a, char* b)
+{
+    int i = 0;
+    while (a[i] && b[i] && a[i] == b[i]) i++;
+
+    if ((a[i] && !b[i]) || (a[i] && b[i] && a[i] > b[i]))
+    {
+        return 1;
+    }
+    if ((!a[i] && b[i]) || (a[i] && b[i] && a[i] < b[i]))
+    {
+        return -1;
+    }
+
+    return 0;
+}
+
 void* memcpy(void* dest, void* source, size_t num)
 {
     size_t i = 0;

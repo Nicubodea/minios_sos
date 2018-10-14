@@ -4,10 +4,13 @@
 #include "screen.h"
 
 QWORD gNumberOfTicks = 0;
+QWORD gNumberOfSeconds = 0;
 
 
 VOID
-TestPit(PCONTEXT Context) 
+SosPitHandleTimer(
+    PCONTEXT Context
+    )
 {
     UNREFERENCED_PARAMETER(Context);
 
@@ -17,8 +20,36 @@ TestPit(PCONTEXT Context)
 
     if (gNumberOfTicks % TIMER_ONE_SECOND == 0)
     {
-        printf("Theoretically, a second passed...\n");
+        gNumberOfSeconds++;
+
+        // TODO: this is a workaround for my PC to not turn into a vacuum cleaner during running the OS
+        // mainly because i did a __halt() in the while-true when waiting for user-input
+        // so once a second we verify for new input
+        Context->RegRip++;
     }
+}
+
+
+CLOCK
+SosPitGetClock(
+    VOID
+    )
+{
+    CLOCK clock;
+
+    clock.Hours = (DWORD)(gNumberOfSeconds / 3600);
+    clock.Minutes = (gNumberOfSeconds % 3600) / 60;
+    clock.Seconds = (gNumberOfSeconds % 3600) % 60;
+
+    return clock;
+}
+
+VOID
+SosPicSetClock(
+    CLOCK Clock
+    )
+{
+    gNumberOfSeconds = Clock.Hours * 3600 + Clock.Minutes * 60 + Clock.Seconds;
 }
 
 
@@ -35,5 +66,5 @@ SosInitPit(
     __outbyte(PIT_DATA_PORT_CH0, divisor & 0xFF);
     __outbyte(PIT_DATA_PORT_CH0, (divisor >> 8) & 0xFF);
 
-    SosRegisterInterrupt(INTERRUPT_TIMER, TestPit, TYPE_INTERRUPT);
+    SosRegisterInterrupt(INTERRUPT_TIMER, SosPitHandleTimer, TYPE_INTERRUPT);
 }

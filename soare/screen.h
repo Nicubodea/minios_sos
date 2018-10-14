@@ -18,5 +18,6 @@ void sprintf(char* str, const char* format, ...);
 void printf_delete_last_character();
 void* memcpy(void* dest, void* source, size_t num);
 int strlen(const char* x);
+int strcmp(char* a, char* b);
 
 #endif // _SCREEN_H_

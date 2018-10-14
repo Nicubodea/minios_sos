@@ -1,7 +1,7 @@
 #include "console.h"
 #include "keyboard.h"
 #include "screen.h"
-
+#include "pit.h"
 
 static BYTE gConsoleBuffer[1024];
 DWORD gBufferSize = 0;
@@ -300,6 +300,7 @@ SosConsoleRead(
     while (gReadEnded == FALSE)
     {
         // should sleep here or something, but we don't have scheduling yet...
+        __halt();
         continue;
     }
 
@@ -365,12 +366,41 @@ SosConsoleStartConsole(
 )
 {
     BYTE buffer[1024] = { 0 };
-    BYTE buff2[10] = { 0 };
-    DWORD x;
+
     while (TRUE)
     {
-        SosConsoleRead("%s %d %s", buffer, &x, buff2);
-        printf("%s %d %s\n", buffer, x, buff2);
+        printf(">");
+        SosConsoleRead("%s", buffer);
+
+        if (strcmp((char*)buffer, "gettime") == 0)
+        {
+            CLOCK c = SosPitGetClock();
+            printf("%d:%d:%d\n", c.Hours, c.Minutes, c.Seconds);
+        }
+        else if (strcmp((char*)buffer, "settime") == 0)
+        {
+            DWORD hours, minutes, seconds;
+            CLOCK c;
+
+            printf("Give hours: ");
+            SosConsoleRead("%d", &hours);
+            
+            printf("Give minutes: ");
+            SosConsoleRead("%d", &minutes);
+            
+            printf("Give seconds: ");
+            SosConsoleRead("%d", &seconds);
+        
+            c.Hours = hours;
+            c.Minutes = minutes;
+            c.Seconds = seconds;
+
+            SosPicSetClock(c);
+        }
+        else
+        {
+            printf("Unknown command\n");
+        }
     }
 
 }

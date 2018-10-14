@@ -32,11 +32,26 @@
 #define TIMER_ONE_SECOND            (10000 / TIMER_FREQUENCY)
 
 
+typedef struct _CLOCK
+{
+    DWORD Hours;
+    DWORD Minutes;
+    DWORD Seconds;
+} CLOCK, *PCLOCK;
+
 VOID
 SosInitPit(
     VOID
     );
 
+CLOCK
+SosPitGetClock(
+    VOID
+);
 
+VOID
+SosPicSetClock(
+    CLOCK Clock
+    );
 
 #endif
