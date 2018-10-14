@@ -127,4 +127,9 @@ SosKeyboardDetachEventHandler(
     VOID
     );
 
+VOID
+SosInitKeyboard(
+    VOID
+);
+
 #endif

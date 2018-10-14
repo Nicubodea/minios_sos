@@ -233,6 +233,7 @@
     <ClInclude Include="mmap.h" />
     <ClInclude Include="paging.h" />
     <ClInclude Include="pic.h" />
+    <ClInclude Include="pit.h" />
     <ClInclude Include="scancode_to_key.h" />
     <ClInclude Include="screen.h" />
     <ClInclude Include="sosdefines.h" />
@@ -247,6 +248,7 @@
     <ClCompile Include="mmap.c" />
     <ClCompile Include="paging.c" />
     <ClCompile Include="pic.c" />
+    <ClCompile Include="pit.c" />
     <ClCompile Include="screen.c" />
   </ItemGroup>
   <ItemGroup>

@@ -24,7 +24,11 @@
 #define INTERRUPT_XM            0x13
 #define INTERRUPT_VE            0x14
 
-#define INTERRUPT_KEYBOARD      0x21
+#define INTERRUPT_TIMER             0x20
+#define INTERRUPT_KEYBOARD          0x21
+
+#define INTERRUPT_SPURIOUS_MASTER    0x27
+#define INTERRUPT_SPURIOUS_SLAVE     0x2F
 
 #define TYPE_TRAP               0xF
 #define TYPE_INTERRUPT          0xE

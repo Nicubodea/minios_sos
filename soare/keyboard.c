@@ -167,3 +167,14 @@ SosHandleKeyboardEvent(
         }
     }
 }
+
+
+VOID
+SosInitKeyboard(
+    VOID
+    )
+{
+    SosPicClearIrqMask(PIC_IRQ1_KEYBOARD);
+
+    SosRegisterInterrupt(INTERRUPT_KEYBOARD, SosHandleKeyboardEvent, TYPE_INTERRUPT);
+}

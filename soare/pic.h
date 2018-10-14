@@ -28,7 +28,10 @@
 
 #define PIC_EOI         0x20
 
-#define PIC_IRQ1_KEYBOARD   1
+#define PIC_IRQ0_PIT                        0x0
+#define PIC_IRQ1_KEYBOARD                   0x1
+#define PIC_IRQ7_MASTER_SPURIOUS_INTERRUPT  0x7
+#define PIC_IRQ15_SLAVE_SPURIOUS_INTERRUPT  0xf
 
 #define PIC_MASTER_BASE     0x20
 #define PIC_SLAVE_BASE      0x28

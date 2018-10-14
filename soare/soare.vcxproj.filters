@@ -44,6 +44,9 @@
     <ClCompile Include="console.c">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="pit.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="boot.h">
@@ -86,6 +89,9 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="console.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="pit.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

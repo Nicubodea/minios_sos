@@ -1,6 +1,8 @@
 #include "interrupt.h"
 #include "screen.h"
+
 #define INTERRUPT_HANDLE_SIZE 7
+
 #pragma pack(push)
 #pragma pack(1)
 typedef struct _ISR {
@@ -40,7 +42,9 @@ SosInitInterrupts(
     __lidt(&gIdtr);
 }
 
+
 extern VOID AsmHandler();
+
 
 BOOLEAN
 SosRegisterInterrupt(
@@ -82,7 +86,6 @@ SosGenericInterruptHandler(
 {
     gDescriptors[InterruptNumber].Handler(Context);
 }
-
 
 
 VOID

@@ -444,3 +444,42 @@ jmp GenericAsmHandler
 
 push 0x22
 jmp GenericAsmHandler
+
+push 0x23
+jmp GenericAsmHandler
+
+push 0x24
+jmp GenericAsmHandler
+
+push 0x25
+jmp GenericAsmHandler
+
+push 0x26
+jmp GenericAsmHandler
+
+push 0x27
+jmp GenericAsmHandler
+
+push 0x28
+jmp GenericAsmHandler
+
+push 0x29
+jmp GenericAsmHandler
+
+push 0x2a
+jmp GenericAsmHandler
+
+push 0x2b
+jmp GenericAsmHandler
+
+push 0x2c
+jmp GenericAsmHandler
+
+push 0x2d
+jmp GenericAsmHandler
+
+push 0x2e
+jmp GenericAsmHandler
+
+push 0x2f
+jmp GenericAsmHandler
