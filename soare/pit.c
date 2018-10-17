@@ -20,7 +20,12 @@ SosPitHandleTimer(
 
     if (gNumberOfTicks % TIMER_ONE_SECOND == 0)
     {
+        CLOCK c;
         gNumberOfSeconds++;
+
+        c = SosPitGetClock();
+
+        printf_pos((char*)END_TOOLAR - 18, "%d:%d:%d", c.Hours, c.Minutes, c.Seconds);
 
         // TODO: this is a workaround for my PC to not turn into a vacuum cleaner during running the OS
         // mainly because i did a __halt() in the while-true when waiting for user-input

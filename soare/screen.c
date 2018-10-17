@@ -257,8 +257,8 @@ void printf_f(const char* format, void* argv[])
         if ((unsigned __int64)(PBYTE)addr >= END_CONSOLE)
         {
 
-            memcpy((void*)gBuff, (void*)SECOND_ROW, 3840);
-            memcpy((void*)START_CONSOLE, (void*)gBuff, 3840);
+            memcpy((void*)gBuff, (void*)SECOND_ROW, 0xF00);
+            memcpy((void*)START_CONSOLE, (void*)gBuff, 0xF00);
             for (unsigned __int64 index = END_SECOND_ROW; index < END_CONSOLE; index += 2)
             {
                 sprintf_f((char*)index, (char*)" \7", NULL);
@@ -312,4 +312,47 @@ void printf_delete_last_character()
     addr++;
     sprintf_f(addr, (char*)"\7", NULL);
     addr++;
+}
+
+void printf_pos(char* pos, char* format, ...)
+{
+    va_list x;
+    va_start(x, format);
+    void* argv[101];
+    int args = 0;
+    for (int i = 0; i < strlen(format); i++)
+    {
+        if ('%' == format[i])
+        {
+            argv[args] = x;
+            args++;
+            x = x + 8;
+        }
+    }
+
+    printf_pos_f(pos, format, argv);
+}
+
+void printf_pos_f(char* pos, char* format, void* argv[])
+{
+    char buffer[1024];
+    char* addr = pos;
+    sprintf_f(buffer, format, argv);
+
+    int len = strlen(buffer);
+    for (int i = 0; i < len; i++)
+    {
+        if (addr > (char*)END_TOOLAR)
+        {
+            return;
+        }
+
+        //*addr = buffer[i];
+        char aux[2] = { 0 };
+        aux[0] = buffer[i];
+        sprintf_f(addr, aux, NULL);
+        addr++;
+        sprintf_f(addr, "\7", NULL);
+        addr++;
+    }
 }
