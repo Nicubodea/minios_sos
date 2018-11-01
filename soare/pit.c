@@ -30,7 +30,10 @@ SosPitHandleTimer(
         // TODO: this is a workaround for my PC to not turn into a vacuum cleaner during running the OS
         // mainly because i did a __halt() in the while-true when waiting for user-input
         // so once a second we verify for new input
-        Context->RegRip++;
+        if (gIsHalted)
+        {
+            Context->RegRip++;
+        }
     }
 }
 

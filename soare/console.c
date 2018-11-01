@@ -307,7 +307,9 @@ SosConsoleRead(
     while (gReadEnded == FALSE)
     {
         // should sleep here or something, but we don't have scheduling yet...
-        __halt();
+        //gIsHalted = TRUE;
+        //__halt();
+        //gIsHalted = FALSE;
         continue;
     }
 
@@ -405,15 +407,21 @@ SosConsoleStartConsole(
         }
         else if (strcmp((char*)buffer, "readsect") == 0)
         {
-            DWORD sect;
-            WORD sector[256];
+            DWORD sect, pioStatus;
+            WORD sector[WORDS_IN_SECTOR];
             DWORD i;
-            printf("Give sector (LBA28): ");
+
+            printf("Give sector: ");
             SosConsoleRead("%d", &sect);
 
-            SosAtaPioReadDiskLba28(sect, 1, sector);
+            pioStatus = SosAtaPioRead(sect, 1, sector);
+            if (pioStatus != PIO_SUCCESS)
+            {
+                printf("[ERROR] SosAtaPioRead failed with error: %d\n", pioStatus);
+                continue;
+            }
 
-            for (i = 0; i < 256; i++)
+            for (i = 0; i < WORDS_IN_SECTOR; i++)
             {
                 printf("%x, ", sector[i]);
             }

@@ -62,20 +62,44 @@
 #define PIO_SUCCESS                         0
 #define PIO_RESET_FAILED_AFTER_MAX_RETRY    1
 #define PIO_STATUS_FAILED_WITH_ERR          2
+#define PIO_NOT_INITIALIZED                 3
+#define PIO_SECTOR_TOO_HIGH                 4
+
+#define ATA_IDENTIFY_DEVICE_HARDDISK        0
+#define ATA_IDENTIFY_LBA48_SUPPORT          83
+#define ATA_IDENTIFY_LBA28_HIGH             61
+#define ATA_IDENTIFY_LBA28_LOW              60
+#define ATA_IDENTIFY_LBA48_HIGH_1           103
+#define ATA_IDENTIFY_LBA48_HIGH_2           102
+#define ATA_IDENTIFY_LBA48_LOW_1            101
+#define ATA_IDENTIFY_LBA48_LOW_2            100
+
+#define WORDS_IN_SECTOR                     256
+
+#define LBA48_SUPPORTED                     (1<<10)
+
 
 DWORD
-SosAtaPioReadDiskLba28(
-    DWORD Lba28,
-    BYTE SecCnt,
+SosAtaPioRead(
+    QWORD Sector,
+    WORD SectorCount,
     WORD* ReturnBuff
 );
 
+typedef struct _ATA_PIO_IDENTIFY
+{
+    WORD DeviceHardDisk;
+    BOOLEAN SupportsLba48;
+    DWORD NumberOfLba28Sectors;
+    QWORD NumberOfLba48Sectors;
+} ATA_PIO_IDENTIFY, *PATA_PIO_IDENTIFY;
+
+
 DWORD
-SosAtaPioReadDiskLba48(
-    QWORD Lba48,
-    WORD SecCnt,
-    WORD* ReturnBuff
+SosAtaPioIdentify(
+    PATA_PIO_IDENTIFY IdDescriptor
 );
 
+ATA_PIO_IDENTIFY gAtaPioIdentify;
 
 #endif

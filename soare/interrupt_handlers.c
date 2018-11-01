@@ -1,5 +1,7 @@
 #include "interrupt_handlers.h"
 
+extern void __cli();
+
 VOID
 SosInitInterruptHandlers(
     VOID
@@ -35,7 +37,7 @@ SosHandleDivisionError(
 )
 {
     SosDumpInterruptContext(Context);
-    __halt();
+    __cli();__halt();
 }
 
 VOID
@@ -44,7 +46,7 @@ SosHandleDebugException(
 )
 {
     SosDumpInterruptContext(Context);
-    __halt();
+    __cli();__halt();
 }
 
 
@@ -54,7 +56,7 @@ SosHandleNMI(
 )
 {
     SosDumpInterruptContext(Context);
-    __halt();
+    __cli();__halt();
 }
 
 
@@ -64,7 +66,7 @@ SosHandleBreakpoint(
 )
 {
     SosDumpInterruptContext(Context);
-    __halt();
+    __cli();__halt();
 }
 
 
@@ -74,7 +76,7 @@ SosHandleOverflow(
 )
 {
     SosDumpInterruptContext(Context);
-    __halt();
+    __cli();__halt();
 }
 
 
@@ -84,7 +86,7 @@ SosHandleBoundRangeExceeded(
 )
 {
     SosDumpInterruptContext(Context);
-    __halt();
+    __cli();__halt();
 }
 
 
@@ -94,7 +96,7 @@ SosHandleInvalidOpcode(
 )
 {
     SosDumpInterruptContext(Context);
-    __halt();
+    __cli();__halt();
 }
 
 
@@ -104,7 +106,7 @@ SosHandleDeviceNotAvailable(
 )
 {
     SosDumpInterruptContext(Context);
-    __halt();
+    __cli();__halt();
 }
 
 
@@ -114,7 +116,7 @@ SosHandleDoubleFault(
 )
 {
     SosDumpInterruptContext(Context);
-    __halt();
+    __cli();__halt();
 }
 
 
@@ -124,7 +126,7 @@ SosHandleCoprocessorSegment(
 )
 {
     SosDumpInterruptContext(Context);
-    __halt();
+    __cli();__halt();
 }
 
 
@@ -134,7 +136,7 @@ SosHandleInvalidTSS(
 )
 {
     SosDumpInterruptContext(Context);
-    __halt();
+    __cli();__halt();
 }
 
 
@@ -144,7 +146,7 @@ SosHandleSegmentNotPresent(
 )
 {
     SosDumpInterruptContext(Context);
-    __halt();
+    __cli();__halt();
 }
 
 
@@ -154,7 +156,7 @@ SosHandleStackFault(
 )
 {
     SosDumpInterruptContext(Context);
-    __halt();
+    __cli();__halt();
 }
 
 
@@ -164,7 +166,7 @@ SosHandleGeneralProtection(
 )
 {
     SosDumpInterruptContext(Context);
-    __halt();
+    __cli();__halt();
 }
 
 
@@ -174,7 +176,7 @@ SosHandlePageFault(
 )
 {
     SosDumpInterruptContext(Context);
-    __halt();
+    __cli();__halt();
 }
 
 
@@ -184,7 +186,7 @@ SosHandleFloatingPointError(
 )
 {
     SosDumpInterruptContext(Context);
-    __halt();
+    __cli();__halt();
 }
 
 
@@ -194,7 +196,7 @@ SosHandleAlignmentCheck(
 )
 {
     SosDumpInterruptContext(Context);
-    __halt();
+    __cli();__halt();
 }
 
 
@@ -204,7 +206,7 @@ SosHandleMachineCheck(
 )
 {
     SosDumpInterruptContext(Context);
-    __halt();
+    __cli();__halt();
 }
 
 
@@ -214,7 +216,7 @@ SosHandleSIMDFloatingPoint(
 )
 {
     SosDumpInterruptContext(Context);
-    __halt();
+    __cli();__halt();
 }
 
 
@@ -224,5 +226,5 @@ SosHandleVirtualizationException(
 )
 {
     SosDumpInterruptContext(Context);
-    __halt();
+    __cli();__halt();
 }

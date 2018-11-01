@@ -1,8 +1,11 @@
 #include "atapio.h"
 #include "screen.h"
 
-BOOLEAN
-SosAtaPioVerifyStatusForErrors(
+static BOOLEAN gAtaPioIdentified;
+
+
+static BOOLEAN
+_SosAtaPioVerifyStatusForErrors(
     BYTE Status
 )
 {
@@ -16,8 +19,8 @@ SosAtaPioVerifyStatusForErrors(
 }
 
 
-DWORD
-SosAtaPioReset(
+static DWORD
+_SosAtaPioReset(
     VOID
     )
 {
@@ -38,7 +41,7 @@ SosAtaPioReset(
         }
 
         status = __inbyte(ATAPIO_STATUS_REG_R);
-        if (SosAtaPioVerifyStatusForErrors(status))
+        if (_SosAtaPioVerifyStatusForErrors(status))
         {
             return PIO_STATUS_FAILED_WITH_ERR;
         }
@@ -55,8 +58,8 @@ SosAtaPioReset(
 }
 
 
-DWORD
-SosAtaPioReadDiskLba28(
+static DWORD
+_SosAtaPioReadDiskLba28(
     DWORD Lba28,
     BYTE SecCnt,
     WORD* ReturnBuff
@@ -73,7 +76,7 @@ SosAtaPioReadDiskLba28(
         // the device is busy, try again
         status = __inbyte(ATAPIO_STATUS_REG_R);
 
-        if (SosAtaPioVerifyStatusForErrors(status))
+        if (_SosAtaPioVerifyStatusForErrors(status))
         {
             return PIO_STATUS_FAILED_WITH_ERR;
         }
@@ -83,7 +86,7 @@ SosAtaPioReadDiskLba28(
 
     if (retries == PIO_MAX_RETRIES)
     {
-        DWORD pioStatus = SosAtaPioReset();
+        DWORD pioStatus = _SosAtaPioReset();
         if (PIO_SUCCESS != pioStatus)
         {
             return pioStatus;
@@ -97,7 +100,7 @@ SosAtaPioReadDiskLba28(
         // the device is not ready, try again
         status = __inbyte(ATAPIO_STATUS_REG_R);
 
-        if (SosAtaPioVerifyStatusForErrors(status))
+        if (_SosAtaPioVerifyStatusForErrors(status))
         {
             return PIO_STATUS_FAILED_WITH_ERR;
         }
@@ -107,7 +110,7 @@ SosAtaPioReadDiskLba28(
 
     if (retries == PIO_MAX_RETRIES)
     {
-        DWORD pioStatus = SosAtaPioReset();
+        DWORD pioStatus = _SosAtaPioReset();
         if (PIO_SUCCESS != pioStatus)
         {
             return pioStatus;
@@ -132,13 +135,13 @@ SosAtaPioReadDiskLba28(
         // wait until the drive is ready to transfer data
         status = __inbyte(ATAPIO_STATUS_REG_R);
 
-        if (SosAtaPioVerifyStatusForErrors(status))
+        if (_SosAtaPioVerifyStatusForErrors(status))
         {
             return PIO_STATUS_FAILED_WITH_ERR;
         }
     }
 
-    for (i = 0; i < (DWORD)SecCnt * 256; i++)
+    for (i = 0; i < (DWORD)SecCnt * WORDS_IN_SECTOR; i++)
     {
         ReturnBuff[i] = __inword(ATAPIO_DATA_REG_RW);
     }
@@ -147,12 +150,13 @@ SosAtaPioReadDiskLba28(
 }
 
 
-DWORD
-SosAtaPioReadDiskLba48(
+
+static DWORD
+_SosAtaPioReadDiskLba48(
     QWORD Lba48,
     WORD SecCnt,
     WORD* ReturnBuff
-    )
+)
 {
     BYTE status;
     DWORD i;
@@ -165,8 +169,8 @@ SosAtaPioReadDiskLba48(
     {
         // the device is busy, try again
         status = __inbyte(ATAPIO_STATUS_REG_R);
-        printf("%x\n", status);
-        if (SosAtaPioVerifyStatusForErrors(status))
+
+        if (_SosAtaPioVerifyStatusForErrors(status))
         {
             return PIO_STATUS_FAILED_WITH_ERR;
         }
@@ -176,7 +180,7 @@ SosAtaPioReadDiskLba48(
 
     if (retries == PIO_MAX_RETRIES)
     {
-        DWORD pioStatus = SosAtaPioReset();
+        DWORD pioStatus = _SosAtaPioReset();
         if (PIO_SUCCESS != pioStatus)
         {
             return pioStatus;
@@ -189,8 +193,8 @@ SosAtaPioReadDiskLba48(
     {
         // the device is not ready, try again
         status = __inbyte(ATAPIO_STATUS_REG_R);
-        printf("%x\n", status);
-        if (SosAtaPioVerifyStatusForErrors(status))
+
+        if (_SosAtaPioVerifyStatusForErrors(status))
         {
             return PIO_STATUS_FAILED_WITH_ERR;
         }
@@ -200,7 +204,7 @@ SosAtaPioReadDiskLba48(
 
     if (retries == PIO_MAX_RETRIES)
     {
-        DWORD pioStatus = SosAtaPioReset();
+        DWORD pioStatus = _SosAtaPioReset();
         if (PIO_SUCCESS != pioStatus)
         {
             return pioStatus;
@@ -231,16 +235,144 @@ SosAtaPioReadDiskLba48(
         // wait until the drive is ready to transfer data
         status = __inbyte(ATAPIO_STATUS_REG_R);
 
-        if (SosAtaPioVerifyStatusForErrors(status))
+        if (_SosAtaPioVerifyStatusForErrors(status))
         {
             return PIO_STATUS_FAILED_WITH_ERR;
         }
     }
 
-    for (i = 0; i < (DWORD)SecCnt * 256; i++)
+    for (i = 0; i < (DWORD)SecCnt * WORDS_IN_SECTOR; i++)
     {
         ReturnBuff[i] = __inword(ATAPIO_DATA_REG_RW);
     }
 
     return PIO_SUCCESS;
+}
+
+
+DWORD
+SosAtaPioIdentify(
+    PATA_PIO_IDENTIFY IdDescriptor
+    )
+{
+    BYTE status;
+    DWORD i;
+    DWORD retries = 0;
+    WORD buffer[WORDS_IN_SECTOR];
+
+    status = __inbyte(ATAPIO_STATUS_REG_R);
+
+    while (((status & STATUS_BSY) != 0 || (status & STATUS_DRQ) != 0) && retries < PIO_MAX_RETRIES)
+    {
+        // the device is busy, try again
+        status = __inbyte(ATAPIO_STATUS_REG_R);
+
+        if (_SosAtaPioVerifyStatusForErrors(status))
+        {
+            return PIO_STATUS_FAILED_WITH_ERR;
+        }
+
+        retries++;
+    }
+
+    if (retries == PIO_MAX_RETRIES)
+    {
+        DWORD pioStatus = _SosAtaPioReset();
+        if (PIO_SUCCESS != pioStatus)
+        {
+            return pioStatus;
+        }
+    }
+
+    retries = 0;
+
+    while ((status & STATUS_RDY) == 0 && retries < PIO_MAX_RETRIES)
+    {
+        // the device is not ready, try again
+        status = __inbyte(ATAPIO_STATUS_REG_R);
+
+        if (_SosAtaPioVerifyStatusForErrors(status))
+        {
+            return PIO_STATUS_FAILED_WITH_ERR;
+        }
+
+        retries++;
+    }
+
+    if (retries == PIO_MAX_RETRIES)
+    {
+        DWORD pioStatus = _SosAtaPioReset();
+        if (PIO_SUCCESS != pioStatus)
+        {
+            return pioStatus;
+        }
+    }
+
+    // select device 0, set reserved bits and put the 24-27 bits of the LBA
+    __outbyte(ATAPIO_DRIVE_HEAD_REG_RW, 0);
+
+    __outbyte(ATAPIO_COMMAND_REG_W, COMMAND_IDENTIFY);
+
+    status = __inbyte(ATAPIO_STATUS_REG_R);
+
+    while ((status & STATUS_DRQ) == 0)
+    {
+        // wait until the drive is ready to transfer data
+        status = __inbyte(ATAPIO_STATUS_REG_R);
+
+        if (_SosAtaPioVerifyStatusForErrors(status))
+        {
+            return PIO_STATUS_FAILED_WITH_ERR;
+        }
+    }
+
+    for (i = 0; i < WORDS_IN_SECTOR; i++)
+    {
+        buffer[i] = __inword(ATAPIO_DATA_REG_RW);
+    }
+
+    IdDescriptor->DeviceHardDisk = buffer[ATA_IDENTIFY_DEVICE_HARDDISK];
+    IdDescriptor->SupportsLba48 = !!(buffer[ATA_IDENTIFY_LBA48_SUPPORT] & LBA48_SUPPORTED);
+    IdDescriptor->NumberOfLba28Sectors = (buffer[ATA_IDENTIFY_LBA28_HIGH] << 16) | buffer[ATA_IDENTIFY_LBA28_LOW];
+    IdDescriptor->NumberOfLba48Sectors = (((QWORD)buffer[ATA_IDENTIFY_LBA48_HIGH_1]) << 48LL) 
+        | (((QWORD)buffer[ATA_IDENTIFY_LBA48_HIGH_2]) << 32LL)
+        | (buffer[ATA_IDENTIFY_LBA48_LOW_1] << 16)
+        | buffer[ATA_IDENTIFY_LBA48_LOW_2];
+
+    gAtaPioIdentified = TRUE;
+
+    return PIO_SUCCESS;
+}
+
+
+DWORD
+SosAtaPioRead(
+    QWORD Sector,
+    WORD SectorCount,
+    WORD* ReturnBuff
+)
+{
+    if (!gAtaPioIdentified)
+    {
+        return PIO_NOT_INITIALIZED;
+    }
+
+    if (gAtaPioIdentify.SupportsLba48)
+    {
+        if (Sector + SectorCount > gAtaPioIdentify.NumberOfLba48Sectors)
+        {
+            return PIO_SECTOR_TOO_HIGH;
+        }
+
+        return _SosAtaPioReadDiskLba48(Sector, SectorCount, ReturnBuff);
+    }
+    else
+    {
+        if (Sector + SectorCount > gAtaPioIdentify.NumberOfLba28Sectors)
+        {
+            return PIO_SECTOR_TOO_HIGH;
+        }
+
+        return _SosAtaPioReadDiskLba28((DWORD)Sector, (BYTE)SectorCount, ReturnBuff);
+    }
 }

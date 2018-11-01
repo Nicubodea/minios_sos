@@ -54,4 +54,6 @@ SosPicSetClock(
     CLOCK Clock
     );
 
+BOOLEAN gIsHalted;
+
 #endif
