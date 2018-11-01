@@ -84,6 +84,11 @@ SosGenericInterruptHandler(
     PCONTEXT Context
 )
 {
+    if (gDescriptors[InterruptNumber].Handler == NULL)
+    {
+        SosDumpInterruptContext(Context);
+        return;
+    }
     gDescriptors[InterruptNumber].Handler(Context);
 }
 
