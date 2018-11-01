@@ -8,6 +8,7 @@
 #include "interrupt_handlers.h"
 #include "console.h"
 #include "pit.h"
+#include "atapio.h"
 
 
 VOID 
@@ -34,6 +35,29 @@ SosEntryPoint(
     printf("[INFO] Local apic id: %d\n", SosApicGetCurrentApicId());
 
     printf("[INFO] Init interrupts\n");
+
+    WORD buff1[512] = { 0 }, buff2[512] = { 0 };
+    DWORD pioStatus;
+    
+    pioStatus = SosAtaPioReadDiskLba28(1, 2, buff1);
+    if (pioStatus != PIO_SUCCESS)
+    {
+        printf("[ERROR] SosAtaPioReadDiskLba28 failed with status %d\n", pioStatus);
+    }
+
+    pioStatus = SosAtaPioReadDiskLba28(1, 2, buff2);
+    if (pioStatus != PIO_SUCCESS)
+    {
+        printf("[ERROR] SosAtaPioReadDiskLba48 failed with status %d\n", pioStatus);
+    }
+
+    for (DWORD i = 0; i < 512; i++)
+    {
+        if (buff1[i] != buff2[i])
+        {
+            printf("lba mismatch %x vs %x\n", buff1[i], buff2[i]);
+        }
+    }
 
     SosInitInterrupts();
 

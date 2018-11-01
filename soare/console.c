@@ -2,6 +2,7 @@
 #include "keyboard.h"
 #include "screen.h"
 #include "pit.h"
+#include "atapio.h"
 
 static BYTE gConsoleBuffer[1024];
 DWORD gBufferSize = 0;
@@ -293,13 +294,14 @@ SosConsoleRead(
     char* format, ...
 )
 {
-    UNREFERENCED_PARAMETER(format);
     va_list x;
     va_start(x, format);
     PVOID argv[101];
     DWORD args = 0;
     DWORD argCurrent = 0;
     DWORD j = 0, k = 0;
+
+    UNREFERENCED_PARAMETER(format);
 
     gReadEnded = FALSE;
     while (gReadEnded == FALSE)
@@ -309,7 +311,6 @@ SosConsoleRead(
         continue;
     }
 
-    
     for (DWORD i = 0; format[i] != '\0'; i++)
     {
         if ('%' == format[i])
@@ -401,6 +402,23 @@ SosConsoleStartConsole(
             c.Seconds = seconds;
 
             SosPicSetClock(c);
+        }
+        else if (strcmp((char*)buffer, "readsect") == 0)
+        {
+            DWORD sect;
+            WORD sector[256];
+            DWORD i;
+            printf("Give sector (LBA28): ");
+            SosConsoleRead("%d", &sect);
+
+            SosAtaPioReadDiskLba28(sect, 1, sector);
+
+            for (i = 0; i < 256; i++)
+            {
+                printf("%x, ", sector[i]);
+            }
+
+            printf("\n");
         }
         else
         {

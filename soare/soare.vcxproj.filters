@@ -20,9 +20,6 @@
     <ClCompile Include="screen.c">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="paging.c">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="apic.c">
       <Filter>Source Files</Filter>
     </ClCompile>
@@ -47,6 +44,9 @@
     <ClCompile Include="pit.c">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="atapio.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="boot.h">
@@ -59,9 +59,6 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="sosdefines.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="paging.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="apic.h">
@@ -92,6 +89,9 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="pit.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="atapio.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

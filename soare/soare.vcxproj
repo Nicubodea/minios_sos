@@ -223,6 +223,7 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClInclude Include="apic.h" />
+    <ClInclude Include="atapio.h" />
     <ClInclude Include="boot.h" />
     <ClInclude Include="console.h" />
     <ClInclude Include="defs.h" />
@@ -231,7 +232,6 @@
     <ClInclude Include="keyboard.h" />
     <ClInclude Include="keyboard_state_machine.h" />
     <ClInclude Include="mmap.h" />
-    <ClInclude Include="paging.h" />
     <ClInclude Include="pic.h" />
     <ClInclude Include="pit.h" />
     <ClInclude Include="scancode_to_key.h" />
@@ -240,13 +240,13 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="apic.c" />
+    <ClCompile Include="atapio.c" />
     <ClCompile Include="console.c" />
     <ClCompile Include="interrupt.c" />
     <ClCompile Include="interrupt_handlers.c" />
     <ClCompile Include="keyboard.c" />
     <ClCompile Include="main.c" />
     <ClCompile Include="mmap.c" />
-    <ClCompile Include="paging.c" />
     <ClCompile Include="pic.c" />
     <ClCompile Include="pit.c" />
     <ClCompile Include="screen.c" />
