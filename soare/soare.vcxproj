@@ -222,6 +222,7 @@
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClInclude Include="alloc_phys.h" />
     <ClInclude Include="apic.h" />
     <ClInclude Include="atapio.h" />
     <ClInclude Include="boot.h" />
@@ -239,6 +240,7 @@
     <ClInclude Include="sosdefines.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="alloc_phys.c" />
     <ClCompile Include="apic.c" />
     <ClCompile Include="atapio.c" />
     <ClCompile Include="console.c" />

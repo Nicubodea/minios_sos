@@ -13,6 +13,8 @@ extern SosEntryPoint                   ; import C entry point from main.c
 
 global gMultiBootHeader         ; export multiboot structures to .c
 global gMultiBootStruct
+global KERNEL_BASE_PHYSICAL
+global STACK_BASE_OFFSET
 
 
 ;;
@@ -22,6 +24,7 @@ global gMultiBootStruct
 KERNEL_BASE_VIRTUAL_32      equ 0x40000000			    ; magic 1G VA for x86 builds
 KERNEL_BASE_VIRTUAL_64      equ 0x0000000200000000	    ; magic 8G VA for x64 builds
 KERNEL_BASE_PHYSICAL        equ 0x200000                ; physical address where this file will be loaded (2 MB PA)
+STACK_BASE_OFFSET           equ 0x400000                ; offset to KERNEL_BASE until stack
 
 MULTIBOOT_HEADER_BASE       equ KERNEL_BASE_PHYSICAL + 0x400 ; take into account the MZ/PE header + 0x400 allignment
                                                         ; the multiboot header begins in the .text section
@@ -220,7 +223,7 @@ gMultiBootEntryPoint:
 	RET
 
 	MOV RSP, KERNEL_BASE_VIRTUAL_64
-	ADD RSP, 0x400000 ; 2 MB stack will do 
+	ADD RSP, STACK_BASE_OFFSET - 8 ; 2 MB stack will do 
 
     CALL SosEntryPoint
     
@@ -250,7 +253,7 @@ gMultiBootEntryPoint:
 %endrep
 %endmacro
 
-EXPORT2C __cli, __sti, __magic
+EXPORT2C __cli, __sti, __magic, __rdrand
 
 __cli:
     CLI
@@ -263,6 +266,11 @@ __sti:
 __magic:
     XCHG    BX,BX
     RET
+
+__rdrand:
+    RDRAND EAX
+    RET
+
 
     
 extern SosGenericInterruptHandler

@@ -1,4 +1,5 @@
 #include "mmap.h"
+#include "alloc_phys.h"
 
 PVOID
 SosMapVirtualMemory(
@@ -18,4 +19,16 @@ SosUnmapVirtualMemory(
     )
 {
     UNREFERENCED_PARAMETER(PhysicalPage);
+}
+
+
+VOID
+SosInitMapping(
+    VOID
+)
+{
+    // Get rid of the old page tables and make new page tables
+
+
+
 }

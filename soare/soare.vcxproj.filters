@@ -47,6 +47,9 @@
     <ClCompile Include="atapio.c">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="alloc_phys.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="boot.h">
@@ -92,6 +95,9 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="atapio.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="alloc_phys.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
