@@ -3,6 +3,7 @@
 #include "screen.h"
 #include "pit.h"
 #include "atapio.h"
+#include "alloc_phys.h"
 
 static BYTE gConsoleBuffer[1024];
 DWORD gBufferSize = 0;
@@ -427,6 +428,33 @@ SosConsoleStartConsole(
             }
 
             printf("\n");
+        }
+        else if (strcmp((char*)buffer, "allocp") == 0)
+        {
+            DWORD size;
+            QWORD desired;
+
+            printf("Give desired addr (0 for any): ");
+            SosConsoleRead("%d", &desired);
+
+            printf("Give size: ");
+            SosConsoleRead("%d", &size);
+
+            printf("Alloc returned: %x\n", SosAllocPhysAllocate((PVOID)desired, size));
+        }
+        else if (strcmp((char*)buffer, "freep") == 0)
+        {
+            QWORD address;
+
+            printf("Give free addr: ");
+
+            SosConsoleRead("%d", &address);
+
+            SosAllocPhysFree((PVOID)address);
+        }
+        else if (strcmp((char*)buffer, "showallocp") == 0)
+        {
+            SosAllocPhysPrintAllocs();
         }
         else
         {
