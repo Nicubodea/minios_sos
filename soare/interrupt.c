@@ -3,6 +3,8 @@
 
 #define INTERRUPT_HANDLE_SIZE 7
 
+extern VOID AsmHandler();
+
 #pragma pack(push)
 #pragma pack(1)
 typedef struct _ISR {
@@ -36,14 +38,12 @@ SosInitInterrupts(
     VOID
 )
 {
-    gIdtr.Limit = 256 * 16;
+    gIdtr.Limit = 256 * sizeof(ISR);
     gIdtr.Base = gIsrs;
 
     __lidt(&gIdtr);
 }
 
-
-extern VOID AsmHandler();
 
 
 BOOLEAN

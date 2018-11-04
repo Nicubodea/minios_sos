@@ -257,8 +257,8 @@ void printf_f(const char* format, void* argv[])
         if ((unsigned __int64)(PBYTE)addr >= END_CONSOLE)
         {
 
-            memcpy((void*)gBuff, (void*)SECOND_ROW, 0xF00);
-            memcpy((void*)START_CONSOLE, (void*)gBuff, 0xF00);
+            memcpy((void*)gBuff, (void*)(SECOND_ROW), 0xF00);
+            memcpy((void*)(START_CONSOLE), (void*)gBuff, 0xF00);
             for (unsigned __int64 index = END_SECOND_ROW; index < END_CONSOLE; index += 2)
             {
                 sprintf_f((char*)index, (char*)" \7", NULL);

@@ -2,6 +2,7 @@
 #define _PIT_H_
 
 #include "sosdefines.h"
+#include "interrupt.h"
 #define PIT_COMMAND_PORT            0x43
 #define PIT_DATA_PORT_CH0           0x40
 
@@ -53,6 +54,11 @@ VOID
 SosPicSetClock(
     CLOCK Clock
     );
+
+VOID
+SosPitHandleTimer(
+    PCONTEXT Context
+);
 
 BOOLEAN gIsHalted;
 

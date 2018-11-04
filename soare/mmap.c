@@ -7,7 +7,6 @@ extern QWORD __rdrand();
 QWORD gSelfmapIndex;
 
 QWORD gVirtualMapStart = KERNEL_BASE_VIRTUAL + STACK_BASE_OFFSET;
-QWORD gVirtualKernelVA = KERNEL_BASE_VIRTUAL;
 
 #define PML4_INDEX(x)             (DWORD)(((x) & 0x0000ff8000000000) >> 39)
 #define PDP_INDEX(x)              (DWORD)(((x) & 0x0000007fc0000000) >> 30)
@@ -49,33 +48,39 @@ SosMapVirtualMemory(
 
     if (pml4map[pml4i] == 0)
     {
-        pml4map[pml4i] = (QWORD)SosAllocPhysAllocate(NULL, PAGE_SIZE) | PT_P;
+        pml4map[pml4i] = (QWORD)SosAllocPhysAllocate(NULL, PAGE_SIZE);
         
         if (pml4map[pml4i] == 0)
         {
             //bail out
             return NULL;
         }
+
+        pml4map[pml4i] |= PT_P;
     }
 
     if (pdptmap[pdpti] == 0)
     {
-        pdptmap[pdpti] = (QWORD)SosAllocPhysAllocate(NULL, PAGE_SIZE) | PT_P;
+        pdptmap[pdpti] = (QWORD)SosAllocPhysAllocate(NULL, PAGE_SIZE);
         if (pdptmap[pdpti] == 0)
         {
             //bail out
             return NULL;
         }
+
+        pdptmap[pdpti] |= PT_P;
     }
 
     if (pdmap[pdi] == 0)
     {
-        pdmap[pdi] = (QWORD)SosAllocPhysAllocate(NULL, PAGE_SIZE) | PT_P;
+        pdmap[pdi] = (QWORD)SosAllocPhysAllocate(NULL, PAGE_SIZE);
         if (pdmap[pdi] == 0)
         {
             //bail out
             return NULL;
         }
+
+        pdmap[pdi] |= PT_P;
     }
 
     ptmap[pti] = ((QWORD)(PhysicalPage) & (~PAGE_OFFSET)) | ((!CacheType) << 4) | PT_P;
@@ -90,6 +95,7 @@ SosMapVirtualMemory(
 
 static PVOID
 _SosMapVirtualMemoryInVirtualSpace(
+    QWORD DesiredVA,
     PVOID PhysicalPage,
     MEMORY_CACHE_TYPE CacheType,
     QWORD VirtualSpace
@@ -99,56 +105,60 @@ _SosMapVirtualMemoryInVirtualSpace(
     PQWORD pml4map = NULL, pdptmap = NULL, pdmap = NULL, ptmap = NULL;
     PVOID toRet;
 
-    pml4i = PML4_INDEX(gVirtualKernelVA);
-    pdpti = PDP_INDEX(gVirtualKernelVA);
-    pdi = PD_INDEX(gVirtualKernelVA);
-    pti = PT_INDEX(gVirtualKernelVA);
+    pml4i = PML4_INDEX(DesiredVA);
+    pdpti = PDP_INDEX(DesiredVA);
+    pdi = PD_INDEX(DesiredVA);
+    pti = PT_INDEX(DesiredVA);
 
     pml4map = SosMapVirtualMemory((PVOID)VirtualSpace, CacheType);
     if (pml4map[pml4i] == 0)
     {
-        pml4map[pml4i] = (QWORD)SosAllocPhysAllocate(0, PAGE_SIZE) | PT_P;
+        pml4map[pml4i] = (QWORD)SosAllocPhysAllocate(0, PAGE_SIZE);
         if (pml4map[pml4i] == 0)
         {
             //bail out
             toRet = NULL;
             goto cleanup_and_exit;
         }
+
+        pml4map[pml4i] |= PT_P;
     }
 
     pdptmap = SosMapVirtualMemory((PVOID)(pml4map[pml4i] & (~PAGE_OFFSET)), SosMemoryUncachable);
     
     if (pdptmap[pdpti] == 0)
     {
-        pdptmap[pdpti] = (QWORD)SosAllocPhysAllocate(NULL, PAGE_SIZE) | PT_P;
+        pdptmap[pdpti] = (QWORD)SosAllocPhysAllocate(NULL, PAGE_SIZE);
         if (pdptmap[pdpti] == 0)
         {
             //bail out
             toRet = NULL;
             goto cleanup_and_exit;
         }
+
+        pdptmap[pdpti] |= PT_P;
     }
 
     pdmap = SosMapVirtualMemory((PVOID)(pdptmap[pdpti] & (~PAGE_OFFSET)), SosMemoryUncachable);
 
     if (pdmap[pdi] == 0)
     {
-        pdmap[pdi] = (QWORD)SosAllocPhysAllocate(NULL, PAGE_SIZE) | PT_P;
+        pdmap[pdi] = (QWORD)SosAllocPhysAllocate(NULL, PAGE_SIZE);
         if (pdmap[pdi] == 0)
         {
             //bail out
             toRet = NULL;
             goto cleanup_and_exit;
         }
+
+        pdmap[pdi] |= PT_P;
     }
 
     ptmap = SosMapVirtualMemory((PVOID)(pdmap[pdi] & (~PAGE_OFFSET)), SosMemoryUncachable);
 
     ptmap[pti] = ((QWORD)(PhysicalPage) & (~PAGE_OFFSET)) | ((!CacheType) << 4) | PT_P;
 
-    gVirtualKernelVA += PAGE_SIZE;
-
-    toRet = (PVOID)(gVirtualKernelVA - PAGE_SIZE + ((QWORD)PhysicalPage & PAGE_OFFSET));
+    toRet = (PVOID)(DesiredVA + ((QWORD)PhysicalPage & PAGE_OFFSET));
 
 cleanup_and_exit:
     if (pml4map != NULL)
@@ -271,45 +281,55 @@ SosInitMapping(
     PQWORD pml4 = SosAllocPhysAllocate(NULL, PAGE_SIZE);
     PQWORD pml4Map;
     DWORD selfMapIndex;
+    QWORD currentVA;
 
     gSelfmapIndex = 0x1FF;
+
+    currentVA = KERNEL_BASE_VIRTUAL;
 
     // make sure we map the whole kernel + stack in the new virtual space
     for (QWORD i = 0; i < KERNEL_BASE_PHYSICAL + STACK_BASE_OFFSET; i+= PAGE_SIZE)
     {
-        if (NULL == _SosMapVirtualMemoryInVirtualSpace((PVOID)i, SosMemoryCachable, (QWORD)pml4))
+        if (NULL == _SosMapVirtualMemoryInVirtualSpace(currentVA, (PVOID)i, SosMemoryCachable, (QWORD)pml4))
         {
             printf("[ERROR] Could not map %x!\n", i);
             return;
         }
+
+        currentVA += PAGE_SIZE;
     }
 
-    // map 1 to 1 up until KERNEL_BASE_PHYSICAL
-    gVirtualKernelVA = 0;
-
-    for (QWORD i = 0; i < KERNEL_BASE_PHYSICAL; i+= PAGE_SIZE)
+    // map 1 to 1 up until KERNEL_BASE_PHYSICAL + STACK_BASE_OFFSET
+    currentVA = 0;
+    for (QWORD i = 0; i < KERNEL_BASE_PHYSICAL + STACK_BASE_OFFSET; i+= PAGE_SIZE)
     {
-        _SosMapVirtualMemoryInVirtualSpace((PVOID)i, SosMemoryCachable, (QWORD)pml4);
+        if (currentVA != 0 && NULL == _SosMapVirtualMemoryInVirtualSpace(currentVA, (PVOID)i, SosMemoryCachable, (QWORD)pml4))
+        {
+            printf("[ERROR] Could not map %x one to one!\n", i);
+            return;
+        }
+
+        currentVA += PAGE_SIZE;
     }
 
     // set-up the self-map index
     selfMapIndex = __rdrand() % 256 + 256;
-
+    
     printf("[INFO] Self map index: %x\n", selfMapIndex);
 
     pml4Map = SosMapVirtualMemory(pml4, SosMemoryCachable);
 
     pml4Map[selfMapIndex] = (QWORD)pml4 | PT_P;
-
+    
     SosUnmapVirtualMemory(pml4Map);
 
     // now it is safe to put in gSelfmapIndex the new index
-    //gSelfmapIndex = selfMapIndex;
+    gSelfmapIndex = selfMapIndex;
 
-    //__writecr3((QWORD)pml4);
+    __writecr3((QWORD)pml4);
 
     // restore the initial virtual map start
-    //gVirtualMapStart = KERNEL_BASE_VIRTUAL + STACK_BASE_OFFSET;
+    gVirtualMapStart = KERNEL_BASE_VIRTUAL + STACK_BASE_OFFSET;
 
     // we are done!
 }

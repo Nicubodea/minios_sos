@@ -362,7 +362,7 @@ SosConsoleRead(
             }
             if (format[i + 1] == 'x')
             {
-                DWORD number = 0;
+                QWORD number = 0;
                 while (j < gBufferSize && (gConsoleBuffer[j] < '0' || gConsoleBuffer[j] > '9') && (gConsoleBuffer[j] < 'A' || gConsoleBuffer[j] > 'F'))
                 {
                     j++;
@@ -400,7 +400,7 @@ SosConsoleRead(
                     j++;
                 }
 
-                **(PDWORD*)(argv[argCurrent]) = number;
+                **(PQWORD*)(argv[argCurrent]) = number;
             }
 
             i++;
@@ -503,12 +503,40 @@ SosConsoleStartConsole(
             printf("Give phys addr: ");
 
             SosConsoleRead("%x", &phys);
-            printf("%x", phys);
+
             pMap = SosMapVirtualMemory((PVOID)phys, SosMemoryUncachable);
 
             if (pMap != NULL)
             {
                 printf("%x\n", pMap[0]);
+                SosUnmapVirtualMemory(pMap);
+            }
+            else
+            {
+                printf("Physical memory could not be mapped!\n");
+            }
+
+        }
+        else if (strcmp((char*)buffer, "writephys") == 0)
+        {
+            QWORD phys;
+            PQWORD pMap;
+            QWORD value;
+
+            printf("Give phys addr: ");
+
+            SosConsoleRead("%x", &phys);
+
+            printf("What to write: ");
+
+            SosConsoleRead("%x", &value);
+
+            pMap = SosMapVirtualMemory((PVOID)phys, SosMemoryUncachable);
+
+            if (pMap != NULL)
+            {
+                pMap[0] = value;
+                printf("Succesfully written!\n");
                 SosUnmapVirtualMemory(pMap);
             }
             else

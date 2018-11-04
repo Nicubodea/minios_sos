@@ -32,7 +32,7 @@ SosEntryPoint(
 
     apicBase = __readmsr(IA32_APIC_BASE);
 
-    printf("[INFO] BSP: %d, global enable: %d, apic base: %x", !!(apicBase & (1 << 8)), !!(apicBase & (1 << 11)), (apicBase & ~PAGE_OFFSET));
+    printf("[INFO] BSP: %d, global enable: %d, apic base: %x\n", !!(apicBase & (1 << 8)), !!(apicBase & (1 << 11)), (apicBase & ~PAGE_OFFSET));
 
     printf("[INFO] Local apic id: %d\n", SosApicGetCurrentApicId());
 
