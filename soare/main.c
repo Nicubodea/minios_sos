@@ -71,7 +71,7 @@ SosEntryPoint(
 
     SosConsoleInitConsole();
 
-    printf("[INFO] Init mapping!");
+    printf("[INFO] Init mapping!\n");
 
     SosInitMapping();
 

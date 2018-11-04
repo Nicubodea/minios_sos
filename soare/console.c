@@ -4,6 +4,7 @@
 #include "pit.h"
 #include "atapio.h"
 #include "alloc_phys.h"
+#include "mmap.h"
 
 static BYTE gConsoleBuffer[1024];
 DWORD gBufferSize = 0;
@@ -359,6 +360,48 @@ SosConsoleRead(
 
                 **(PDWORD*)(argv[argCurrent]) = number;
             }
+            if (format[i + 1] == 'x')
+            {
+                DWORD number = 0;
+                while (j < gBufferSize && (gConsoleBuffer[j] < '0' || gConsoleBuffer[j] > '9') && (gConsoleBuffer[j] < 'A' || gConsoleBuffer[j] > 'F'))
+                {
+                    j++;
+                }
+                while (j < gBufferSize && ((gConsoleBuffer[j] >= '0' && gConsoleBuffer[j] <= '9') || (gConsoleBuffer[j] >='A' && gConsoleBuffer[j] <= 'F')))
+                {
+                    if (gConsoleBuffer[j] >= 'A' && gConsoleBuffer[j] <= 'F')
+                    {
+                        switch (gConsoleBuffer[j])
+                        {
+                        case 'A':
+                            number = number * 16 + 10;
+                            break;
+                        case 'B':
+                            number = number * 16 + 11;
+                            break;
+                        case 'C':
+                            number = number * 16 + 12;
+                            break;
+                        case 'D':
+                            number = number * 16 + 13;
+                            break;
+                        case 'E':
+                            number = number * 16 + 14;
+                            break;
+                        case 'F':
+                            number = number * 16 + 15;
+                            break;
+                        }
+                    }
+                    else
+                    {
+                        number = number * 16 + gConsoleBuffer[j] - '0';
+                    }
+                    j++;
+                }
+
+                **(PDWORD*)(argv[argCurrent]) = number;
+            }
 
             i++;
             argCurrent++;
@@ -451,6 +494,28 @@ SosConsoleStartConsole(
             SosConsoleRead("%d", &address);
 
             SosAllocPhysFree((PVOID)address);
+        }
+        else if (strcmp((char*)buffer, "readphys") == 0)
+        {
+            QWORD phys;
+            PQWORD pMap;
+
+            printf("Give phys addr: ");
+
+            SosConsoleRead("%x", &phys);
+            printf("%x", phys);
+            pMap = SosMapVirtualMemory((PVOID)phys, SosMemoryUncachable);
+
+            if (pMap != NULL)
+            {
+                printf("%x\n", pMap[0]);
+                SosUnmapVirtualMemory(pMap);
+            }
+            else
+            {
+                printf("Physical memory could not be mapped!\n");
+            }
+
         }
         else if (strcmp((char*)buffer, "showallocp") == 0)
         {

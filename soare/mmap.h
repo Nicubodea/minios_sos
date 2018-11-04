@@ -17,7 +17,7 @@ SosMapVirtualMemory(
 
 VOID
 SosUnmapVirtualMemory(
-    PVOID PhysicalPage
+    PVOID VirtualPage
     );
 
 
