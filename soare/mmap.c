@@ -299,19 +299,6 @@ SosInitMapping(
         currentVA += PAGE_SIZE;
     }
 
-    // map 1 to 1 up until KERNEL_BASE_PHYSICAL + STACK_BASE_OFFSET
-    currentVA = 0;
-    for (QWORD i = 0; i < KERNEL_BASE_PHYSICAL + STACK_BASE_OFFSET; i+= PAGE_SIZE)
-    {
-        if (currentVA != 0 && NULL == _SosMapVirtualMemoryInVirtualSpace(currentVA, (PVOID)i, SosMemoryCachable, (QWORD)pml4))
-        {
-            printf("[ERROR] Could not map %x one to one!\n", i);
-            return;
-        }
-
-        currentVA += PAGE_SIZE;
-    }
-
     // set-up the self-map index
     selfMapIndex = __rdrand() % 256 + 256;
     

@@ -83,7 +83,12 @@ times (0x100 - MULTIBOOT_HEADER_SIZE - MULTIBOOT_INFO_STRUCT_SIZE - 0x40) db 0
 ;; KERNEL_BASE_PHYSICAL + 0x4C0
 ;;
 
-GDTR_BASE_PHYSICAL equ KERNEL_BASE_PHYSICAL + 0x4C0
+GDTR_BASE_PHYSICAL equ KERNEL_BASE_PHYSICAL + 0x4CA
+GDTR_BASE_VIRTUAL  equ KERNEL_BASE_VIRTUAL_64 + KERNEL_BASE_PHYSICAL + 0x4C0
+
+gGdtr64:
+	dw 0x38
+	dq GDTR_BASE_VIRTUAL + 0x10
 
 gGdtr:
 	dw 0x38
@@ -101,7 +106,7 @@ dq 0000000000101111111100100000000000000000000000001111111111111111b	;; data 64 
 
 
 ;; much alignment such lol
-times 0x1000 - 0x38 - 0x6 - 0x4C0 db 0
+times 0x1000 - 0x38 - 0xa - 0x6 - 0x4C0 db 0
 
 ;; KERNEL_BASE_PHYSICAL + 0x1000 - PML4 ; each entry = 512 GB
 dq 0x00202001
@@ -224,6 +229,8 @@ gMultiBootEntryPoint:
 	MOV RSP, KERNEL_BASE_VIRTUAL_64
 	ADD RSP, STACK_BASE_OFFSET - 8 ; 2 MB stack will do 
 
+	LGDT [GDTR_BASE_VIRTUAL]
+
     CALL SosEntryPoint
     
     CLI
@@ -252,7 +259,7 @@ gMultiBootEntryPoint:
 %endrep
 %endmacro
 
-EXPORT2C __cli, __sti, __magic, __rdrand
+EXPORT2C __cli, __sti, __magic, __rdrand, __lgdt
 
 __cli:
     CLI
@@ -269,6 +276,10 @@ __magic:
 __rdrand:
     RDRAND EAX
     RET
+
+__lgdt:
+	LGDT [RCX]
+	RET
 
 
     
