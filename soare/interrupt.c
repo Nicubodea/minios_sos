@@ -106,6 +106,7 @@ SosDumpInterruptContext(
     printf("Rsp: 0x%x\n", Context->RegRsp);
     printf("Ss: 0x%x\n", Context->RegSs);
     printf("~~~~DUMPING GPRS~~~~\n");
+    printf("Cr2: 0x%x\n", Context->RegCr2);
     printf("Rax: 0x%x\n", Context->RegRax);
     printf("Rbx: 0x%x\n", Context->RegRbx);
     printf("Rcx: 0x%x\n", Context->RegRcx);

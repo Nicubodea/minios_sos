@@ -105,7 +105,8 @@ times 0x1000 - 0x38 - 0x6 - 0x4C0 db 0
 
 ;; KERNEL_BASE_PHYSICAL + 0x1000 - PML4 ; each entry = 512 GB
 dq 0x00202001
-times 512 - 1 dq 0
+times 512 - 2 dq 0
+dq 0x00201001           ; the self-map entry
 
 ;; KERNEL_BASE_PHYSICAL + 0x2000 - PDPT ; each entry = 1 GB
 dq 0x00203001	; 0-1 gb
@@ -128,9 +129,7 @@ times 512 - 3 dq 0
 ;; KERNEL_BASE_PHYSICAL + 0x4000 - PD for virtual addresses
 dq 0x00000081
 dq 0x00200081
-dq 0x00400081
-dq 0x00600081
-times 512 - 4 dq 0
+times 512 - 2 dq 0
 
 ;;
 ;; TOP-OF-STACK is KERNEL_BASE_PHYSICAL + 0x10000
@@ -314,8 +313,10 @@ push rdx
 push rcx
 push rbx
 push rax
+mov rax, cr2
+push rax
 
-mov rcx, [rsp+0x80]
+mov rcx, [rsp+0x88]
 mov rdx, rsp
 
 sub rsp, 0x20
@@ -323,6 +324,8 @@ sub rsp, 0x20
 call SosGenericInterruptHandler
 
 add rsp, 0x20
+
+add rsp, 8
 
 pop rax
 pop rbx

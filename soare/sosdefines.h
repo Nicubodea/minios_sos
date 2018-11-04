@@ -74,6 +74,8 @@ typedef BOOLEAN* PBOOLEAN;
 #define KERNEL_BASE_PHYSICAL    0x200000
 #define STACK_BASE_OFFSET       0x400000
 
+#define KERNEL_BASE_VIRTUAL     0x0000000200000000
+
 
 #define PAGE_OFFSET             0xFFF
 #define PAGE_SIZE               0x1000

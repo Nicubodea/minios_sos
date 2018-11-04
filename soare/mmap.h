@@ -13,13 +13,18 @@ PVOID
 SosMapVirtualMemory(
     PVOID PhysicalPage,
     MEMORY_CACHE_TYPE CacheType
-    );
+);
 
 VOID
 SosUnmapVirtualMemory(
     PVOID PhysicalPage
     );
 
+
+VOID
+SosInitMapping(
+    VOID
+);
 
 
 #endif

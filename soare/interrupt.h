@@ -34,7 +34,7 @@
 #define TYPE_INTERRUPT          0xE
 
 typedef struct _CONTEXT {
-
+    QWORD RegCr2;
     QWORD RegRax;
     QWORD RegRbx;
     QWORD RegRcx;

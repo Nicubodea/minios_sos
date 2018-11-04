@@ -1,4 +1,5 @@
 #include "interrupt_handlers.h"
+#include "screen.h"
 
 extern void __cli();
 
@@ -175,7 +176,8 @@ SosHandlePageFault(
     PCONTEXT Context
 )
 {
-    SosDumpInterruptContext(Context);
+    printf("CR2 -> %x", Context->RegCr2);
+    //SosDumpInterruptContext(Context);
     __cli();__halt();
 }
 

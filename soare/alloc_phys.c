@@ -1,8 +1,6 @@
 #include "alloc_phys.h"
 #include "screen.h"
 
-extern void __rdrand();
-
 static QWORD gCurrentPhysical = PHYSICAL_HEAP_START;
 static QWORD gBitmap[(PHYSICAL_HEAP_END - PHYSICAL_HEAP_START) / (0x1000 * 64)];
 static DWORD gAllocSizes[(PHYSICAL_HEAP_END - PHYSICAL_HEAP_START) / (0x1000)];
@@ -115,7 +113,7 @@ SosAllocPhysFree(
     if (address < PHYSICAL_HEAP_START || address > PHYSICAL_HEAP_END)
     {
         // for now return but we should do something bad
-        printf("[ERROR] Invalid free address! Not in range\n");
+        printf("[ERROR] Invalid free address %x! Not in range\n", address);
         return;
     }
 

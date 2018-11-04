@@ -9,6 +9,7 @@
 #include "console.h"
 #include "pit.h"
 #include "atapio.h"
+#include "mmap.h"
 
 
 VOID 
@@ -69,6 +70,10 @@ SosEntryPoint(
     SosInitPit();
 
     SosConsoleInitConsole();
+
+    printf("[INFO] Init mapping!");
+
+    SosInitMapping();
 
     __sti();
 
