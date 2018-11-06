@@ -10,6 +10,31 @@
 #include "pit.h"
 #include "atapio.h"
 #include "mmap.h"
+#include "threads.h"
+
+VOID
+printer(
+    PVOID arg
+)
+{
+    QWORD nr = (QWORD)arg;
+    for(DWORD i = 0; i <5; i++)
+    {
+        printf("%x\n", nr);
+    }
+}
+
+VOID
+SosIdleThread(
+    PVOID Arg
+)
+{
+    UNREFERENCED_PARAMETER(Arg);
+    while (TRUE)
+    {
+        __halt();
+    }
+}
 
 
 VOID 
@@ -75,10 +100,15 @@ SosEntryPoint(
 
     SosInitMapping();
 
+    SosThreadInit();
+
+    SosThreadCreate(SosIdleThread, NULL);
+    SosThreadCreate(printer, (PVOID)22);
+    //SosThreadCreate((PFUNC_ThrFunc)SosConsoleStartConsole, NULL);
     __sti();
 
-    SosConsoleStartConsole();
-
+    __halt();
+    //
     while (TRUE)
     {
         continue;

@@ -259,7 +259,7 @@ gMultiBootEntryPoint:
 %endrep
 %endmacro
 
-EXPORT2C __cli, __sti, __magic, __rdrand, __lgdt
+EXPORT2C __cli, __sti, __magic, __rdrand, __lgdt, __writefs, __readfs
 
 __cli:
     CLI
@@ -281,14 +281,60 @@ __lgdt:
 	LGDT [RCX]
 	RET
 
+__writefs:
+	
+	push rdx
+	push rax
+	push rcx
+	push rbx
+	xor rdx, rdx
+	mov rax, rcx
+	shr rax, 31
+	shr rax, 1
+	mov rdx, rax
+	mov rax, rcx
+	mov rbx, 0x00000000FFFFFFFF
+	and rax, rbx
+	mov rcx, 0xC0000100
+	wrmsr
+	pop rbx
+	pop rcx
+	pop rax
+	pop rdx
+	ret
 
+__readfs:
+	push rdx
+	push rcx
+	push rbx
+	xor rax, rax
+	xor rdx, rdx
+	mov rcx, 0xC0000100
+	rdmsr
+	shl rdx, 31
+	shl rdx, 1
+	or rax, rdx
+	pop rbx
+	pop rcx
+	pop rdx
+	ret
+
+extern SosTerminateCurrentThread
+global SosThreadStartup
+
+SosThreadStartup:
+	SUB	 RSP, 0x20
+	CALL RAX
+
+	SUB	 RSP, 0x20
+	CALL SosTerminateCurrentThread
     
 extern SosGenericInterruptHandler
 global AsmHandler
 
 
 GenericAsmHandler:
-
+CLI
 cmp qword [rsp], 8
 je _put_error_code
 cmp qword [rsp], 10
@@ -309,6 +355,10 @@ jmp _continue
 _skip_error_code:
 	push 0		;; dummy error code
 _continue:
+
+;;
+mov rsp, fs:[0x18]
+
 push r15
 push r14
 push r13

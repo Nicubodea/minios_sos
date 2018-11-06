@@ -2,6 +2,7 @@
 #include "pic.h"
 #include "interrupt.h"
 #include "screen.h"
+#include "scheduler.h"
 
 QWORD gNumberOfTicks = 0;
 QWORD gNumberOfSeconds = 0;
@@ -26,14 +27,8 @@ SosPitHandleTimer(
         c = SosPitGetClock();
 
         printf_pos((char*)END_TOOLAR - 18, "%d:%d:%d", c.Hours, c.Minutes, c.Seconds);
-
-        // TODO: this is a workaround for my PC to not turn into a vacuum cleaner during running the OS
-        // mainly because i did a __halt() in the while-true when waiting for user-input
-        // so once a second we verify for new input
-        if (gIsHalted)
-        {
-            Context->RegRip++;
-        }
+        
+        SosScheduleJobs(Context);
     }
 }
 

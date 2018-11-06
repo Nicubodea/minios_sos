@@ -232,12 +232,15 @@
     <ClInclude Include="interrupt_handlers.h" />
     <ClInclude Include="keyboard.h" />
     <ClInclude Include="keyboard_state_machine.h" />
+    <ClInclude Include="lists.h" />
     <ClInclude Include="mmap.h" />
     <ClInclude Include="pic.h" />
     <ClInclude Include="pit.h" />
     <ClInclude Include="scancode_to_key.h" />
+    <ClInclude Include="scheduler.h" />
     <ClInclude Include="screen.h" />
     <ClInclude Include="sosdefines.h" />
+    <ClInclude Include="threads.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="alloc_phys.c" />
@@ -247,11 +250,14 @@
     <ClCompile Include="interrupt.c" />
     <ClCompile Include="interrupt_handlers.c" />
     <ClCompile Include="keyboard.c" />
+    <ClCompile Include="lists.c" />
     <ClCompile Include="main.c" />
     <ClCompile Include="mmap.c" />
     <ClCompile Include="pic.c" />
     <ClCompile Include="pit.c" />
+    <ClCompile Include="scheduler.c" />
     <ClCompile Include="screen.c" />
+    <ClCompile Include="threads.c" />
   </ItemGroup>
   <ItemGroup>
     <CustomBuild Include="__init.asm">

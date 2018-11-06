@@ -20,10 +20,21 @@ SosUnmapVirtualMemory(
     PVOID VirtualPage
     );
 
+PVOID
+SosVirtAllocVirtual(
+    DWORD Size,
+    DWORD Tag
+);
 
 VOID
 SosInitMapping(
     VOID
+);
+
+VOID
+SosVirtFreeVirtual(
+    PVOID VirtualAddress,
+    DWORD Tag
 );
 
 

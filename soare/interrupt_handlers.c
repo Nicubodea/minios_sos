@@ -176,7 +176,7 @@ SosHandlePageFault(
     PCONTEXT Context
 )
 {
-    printf("CR2 -> %x", Context->RegCr2);
+    Context;
     //SosDumpInterruptContext(Context);
     __cli();__halt();
 }

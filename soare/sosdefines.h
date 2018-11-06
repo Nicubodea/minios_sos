@@ -9,6 +9,14 @@ typedef unsigned short WORD;
 typedef unsigned int DWORD;
 typedef unsigned long long QWORD;
 
+typedef char CHAR;
+typedef long LONG;
+typedef unsigned long ULONG;
+
+typedef CHAR* PCHAR;
+typedef LONG* PLONG;
+typedef CHAR* ULONG_PTR;
+
 typedef VOID* PVOID;
 typedef BYTE* PBYTE;
 typedef WORD* PWORD;

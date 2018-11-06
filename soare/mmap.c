@@ -85,7 +85,6 @@ SosMapVirtualMemory(
 
     ptmap[pti] = ((QWORD)(PhysicalPage) & (~PAGE_OFFSET)) | ((!CacheType) << 4) | PT_P;
 
-
     gVirtualMapStart += PAGE_SIZE;
 
     return (PVOID)(gVirtualMapStart - PAGE_SIZE + ((QWORD)(PhysicalPage) & PAGE_OFFSET));
@@ -319,4 +318,115 @@ SosInitMapping(
     gVirtualMapStart = KERNEL_BASE_VIRTUAL + STACK_BASE_OFFSET;
 
     // we are done!
+}
+
+
+typedef struct _VIRTALLOC_HEADER
+{
+    DWORD Size;
+    DWORD Tag;
+    PVOID Phys;
+} VIRTALLOC_HEADER, *PVIRTALLOC_HEADER;
+
+
+PVOID
+SosVirtAllocVirtual(
+    DWORD Size,
+    DWORD Tag
+)
+{
+    PBYTE pPhys = NULL, pVirt = NULL, pLastVirt = NULL, pInitPhys = NULL;
+    DWORD totalSize = Size + sizeof(VIRTALLOC_HEADER);
+    DWORD nrPages = totalSize % PAGE_SIZE ? (totalSize / PAGE_SIZE) + 1 : totalSize / PAGE_SIZE;
+    BOOLEAN succeeded = TRUE;
+    PVIRTALLOC_HEADER pHeader;
+
+    pPhys = SosAllocPhysAllocate(NULL, Size + sizeof(VIRTALLOC_HEADER));
+    if (NULL == pPhys)
+    {
+        goto cleanup_and_exit;
+    }
+
+    pInitPhys = pPhys;
+
+    pVirt = SosMapVirtualMemory(pPhys, SosMemoryCachable);
+    if (NULL == pVirt)
+    {
+        succeeded = FALSE;
+        goto cleanup_and_exit;
+    }
+
+    for (DWORD i = 1; i < nrPages; i++)
+    {
+        PBYTE pV = SosMapVirtualMemory(pPhys, SosMemoryCachable);
+        if (NULL == pV)
+        {
+            succeeded = FALSE;
+            goto cleanup_and_exit;
+        }
+        pLastVirt = pV;
+        pPhys += PAGE_SIZE;
+    }
+
+cleanup_and_exit:
+    if (!succeeded)
+    {
+        if (NULL != pInitPhys)
+        {
+            SosAllocPhysFree(pInitPhys);
+        }
+        if (NULL != pLastVirt)
+        {
+            while (pLastVirt >= pVirt)
+            {
+                SosUnmapVirtualMemory(pLastVirt);
+                pLastVirt -= PAGE_SIZE;
+            }
+        }
+        return NULL;
+    }
+
+    pHeader = (PVOID)pVirt;
+    pHeader->Tag = Tag;
+    pHeader->Size = Size;
+    pHeader->Phys = pInitPhys;
+
+    return pVirt + sizeof(VIRTALLOC_HEADER);
+}
+
+
+VOID
+SosVirtFreeVirtual(
+    PVOID VirtualAddress,
+    DWORD Tag
+)
+{
+    PVIRTALLOC_HEADER pHeader;
+    DWORD totalSize, nrPages, i;
+    PBYTE pPhys, pVirt;
+
+    pHeader = (PVIRTALLOC_HEADER)((PBYTE)VirtualAddress - sizeof(VIRTALLOC_HEADER));
+
+    if (pHeader->Tag != Tag)
+    {
+        printf("[ERROR] Tag %x different from given tag %x\n", pHeader->Tag, Tag);
+        return;
+    }
+
+    totalSize = pHeader->Size + sizeof(VIRTALLOC_HEADER);
+    nrPages = totalSize % PAGE_SIZE ? (totalSize / PAGE_SIZE) + 1 : totalSize / PAGE_SIZE;
+    pPhys = pHeader->Phys;
+
+    printf("%x", pPhys);
+    pVirt = ((PBYTE)VirtualAddress - sizeof(VIRTALLOC_HEADER));
+
+    SosAllocPhysFree(pPhys);
+
+    for (i = 0; i < nrPages; i++)
+    {
+        SosUnmapVirtualMemory(pVirt);
+
+        pVirt += PAGE_SIZE;
+    }
+
 }
