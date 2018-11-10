@@ -86,18 +86,21 @@ SosScheduleJobs(
             return;
         }
     }
-    printf("[INFO] scheduling thread %x at rip %x", pSelectedThread, pSelectedThread->SavedContext.RegRip);
+    //printf("[INFO] Thread %x at rip %x", pSelectedThread, pSelectedThread->SavedContext.RegRip);
 
-    printf("[INFO] %x (%x)\n", CurrentContext->RegSs, CurrentContext->RegRsp);
-
+    //printf("[INFO] %x (%x)\n", CurrentContext->RegSs, CurrentContext->RegRsp);
+    //printf("Current %x, selected: %x\n", currentThread, pSelectedThread);
     SosScheduleSaveCurrentThreadContext(CurrentContext, currentThread);
+
     SosScheduleLoadThreadContext(CurrentContext, pSelectedThread);
 
-    printf("[INFO] Writing the FS\n");
+    //printf("[INFO] Writing the FS\n");
     __writefs((QWORD)pSelectedThread);
 
-    printf("[INFO] %x (%x)\n", pSelectedThread->SavedContext.RegSs, pSelectedThread->SavedContext.RegRsp);
+    //printf("[INFO] %x (%x)\n", pSelectedThread->SavedContext.RegSs, pSelectedThread->SavedContext.RegRsp);
 
-    printf("[INFO] gogogo\n");
+    //printf("[INFO] gogogo\n");
+
+   // printf("[INFO] Rip -> %x\n", CurrentContext->RegRip);
     
 }

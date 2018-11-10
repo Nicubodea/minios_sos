@@ -40,19 +40,14 @@ SosThreadCreate(
     pThr->SavedContext.RegRflags = 0x2 | (1<<9); // reserved bit | IF
 
     //printf("[INFO] stack base %x, rsp %x\n", pThr->Stack, pThr->SavedContext.RegRsp);
-
+    //printf("[THR] Rip %x rax %x rcx %x\n", pThr->SavedContext.RegRip, pThr->);
     //printf("Thr @ %x -> %x", pThr->SavedContext.RegRax, pThr->SavedContext.RegRcx);
     pThr->State = SosThreadRunning;
 
-    if (__readfs() == 0)
-    {
-        __writefs((QWORD)pThr);
-    }
-
     // disable interrupts as we don't want to be interrupted while we alter the thread list
-    __cli();
+    //__cli();
     InsertTailList(&gThreadList, &pThr->Link);
-    __sti();
+    //__sti();
     
     return pThr;
 }
@@ -67,6 +62,10 @@ SosTerminateCurrentThread(
     printf("%x\n", pThr);
 
     // will be cleanup-ed by the scheduler
-    //pThr->State = SosThreadTerminated;
-    __halt();
+    pThr->State = SosThreadTerminated;
+    //__cli();
+    while (TRUE)
+    {
+        __halt();
+    }
 }

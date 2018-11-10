@@ -326,7 +326,7 @@ SosThreadStartup:
 	SUB	 RSP, 0x20
 	CALL RAX
 
-	SUB	 RSP, 0x20
+	;SUB	 RSP, 0x20
 	CALL SosTerminateCurrentThread
     
 extern SosGenericInterruptHandler
@@ -357,7 +357,7 @@ _skip_error_code:
 _continue:
 
 ;;
-mov rsp, fs:[0x18]
+;; mov rsp, fs:[0x18]
 
 push r15
 push r14

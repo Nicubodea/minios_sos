@@ -102,9 +102,11 @@ SosEntryPoint(
 
     SosThreadInit();
 
+    printf("SosEntryPoint: %x", SosEntryPoint);
+
     SosThreadCreate(SosIdleThread, NULL);
     SosThreadCreate(printer, (PVOID)22);
-    //SosThreadCreate((PFUNC_ThrFunc)SosConsoleStartConsole, NULL);
+    SosThreadCreate((PFUNC_ThrFunc)SosConsoleStartConsole, NULL);
     __sti();
 
     __halt();
