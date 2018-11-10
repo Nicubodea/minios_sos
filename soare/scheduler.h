@@ -9,4 +9,9 @@ SosScheduleJobs(
     PCONTEXT CurrentContext
 );
 
+VOID
+SosScheduleAdjustSleepingThreads(
+    VOID
+);
+
 #endif

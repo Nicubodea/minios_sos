@@ -27,7 +27,12 @@ SosPitHandleTimer(
         c = SosPitGetClock();
 
         printf_pos((char*)END_TOOLAR - 18, "%d:%d:%d", c.Hours, c.Minutes, c.Seconds);
-        
+
+        SosScheduleAdjustSleepingThreads(); 
+    }
+
+    if (gNumberOfTicks % TIMER_SCHEDULE == 0)
+    {
         SosScheduleJobs(Context);
     }
 }

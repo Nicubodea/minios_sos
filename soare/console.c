@@ -5,10 +5,12 @@
 #include "atapio.h"
 #include "alloc_phys.h"
 #include "mmap.h"
+#include "threads.h"
 
 static BYTE gConsoleBuffer[1024];
 DWORD gBufferSize = 0;
-volatile BOOLEAN gReadEnded;
+EVENT gReadEvent;
+BOOLEAN gReadEnded = FALSE;
 
 #define LEFT_SHIFT_KEY      0x29
 #define RIGHT_SHIFT_KEY     0x35
@@ -199,6 +201,7 @@ _SosConsoleReceiveKeyboardEvent(
 )
 {
     BYTE printedCharForEcho = 0;
+
     if (gReadEnded)
     {
         return;
@@ -213,6 +216,7 @@ _SosConsoleReceiveKeyboardEvent(
     if (Event->LastKeyboardEvent.KeyCode == ENTER && Event->LastKeyboardEvent.Pressed)
     {
         gReadEnded = TRUE;
+        SosThreadSignalEvent(&gReadEvent);
         printf("\n");
         return;
     }
@@ -305,15 +309,7 @@ SosConsoleRead(
 
     UNREFERENCED_PARAMETER(format);
 
-    gReadEnded = FALSE;
-    while (gReadEnded == FALSE)
-    {
-        // should sleep here or something, but we don't have scheduling yet...
-        //gIsHalted = TRUE;
-        //__halt();
-        //gIsHalted = FALSE;
-        continue;
-    }
+    SosThreadWaitForEvent(&gReadEvent);
 
     for (DWORD i = 0; format[i] != '\0'; i++)
     {
@@ -409,6 +405,7 @@ SosConsoleRead(
     }
     
     gBufferSize = 0;
+    gReadEnded = FALSE;
 }
 
 
@@ -418,6 +415,8 @@ SosConsoleStartConsole(
 )
 {
     BYTE buffer[1024] = { 0 };
+
+    SosThreadCreateEvent(&gReadEvent);
 
     while (TRUE)
     {

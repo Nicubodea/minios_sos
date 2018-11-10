@@ -31,6 +31,7 @@
 #define PIT_RATE                    1193182
 #define TIMER_FREQUENCY             100 // 10 ms, theoretically
 #define TIMER_ONE_SECOND            (10000 / TIMER_FREQUENCY)
+#define TIMER_SCHEDULE              (1000 / TIMER_FREQUENCY)
 
 
 typedef struct _CLOCK

@@ -405,11 +405,13 @@ SosVirtFreeVirtual(
     DWORD totalSize, nrPages, i;
     PBYTE pPhys, pVirt;
 
-    pHeader = (PVIRTALLOC_HEADER)((PBYTE)VirtualAddress - sizeof(VIRTALLOC_HEADER));
-
+    pHeader = (PVIRTALLOC_HEADER)(((PBYTE)VirtualAddress) - sizeof(VIRTALLOC_HEADER));
+    
     if (pHeader->Tag != Tag)
     {
         printf("[ERROR] Tag %x different from given tag %x\n", pHeader->Tag, Tag);
+        __cli();
+        __halt();
         return;
     }
 
@@ -417,7 +419,6 @@ SosVirtFreeVirtual(
     nrPages = totalSize % PAGE_SIZE ? (totalSize / PAGE_SIZE) + 1 : totalSize / PAGE_SIZE;
     pPhys = pHeader->Phys;
 
-    printf("%x", pPhys);
     pVirt = ((PBYTE)VirtualAddress - sizeof(VIRTALLOC_HEADER));
 
     SosAllocPhysFree(pPhys);
@@ -428,5 +429,4 @@ SosVirtFreeVirtual(
 
         pVirt += PAGE_SIZE;
     }
-
 }

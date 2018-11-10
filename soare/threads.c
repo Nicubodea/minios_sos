@@ -2,13 +2,15 @@
 #include "mmap.h"
 #include "screen.h"
 
-#define DEFAULT_STACK_SIZE      0x600
+#define DEFAULT_STACK_SIZE      0x2000
 
 extern QWORD __readfs();
 extern VOID __writefs(QWORD fs);
 extern VOID __cli();
 extern VOID __sti();
 extern VOID SosThreadStartup();
+
+DWORD gEventId;
 
 LIST_ENTRY gThreadList;
 
@@ -39,15 +41,9 @@ SosThreadCreate(
     pThr->SavedContext.RegSs = 0x20;
     pThr->SavedContext.RegRflags = 0x2 | (1<<9); // reserved bit | IF
 
-    //printf("[INFO] stack base %x, rsp %x\n", pThr->Stack, pThr->SavedContext.RegRsp);
-    //printf("[THR] Rip %x rax %x rcx %x\n", pThr->SavedContext.RegRip, pThr->);
-    //printf("Thr @ %x -> %x", pThr->SavedContext.RegRax, pThr->SavedContext.RegRcx);
     pThr->State = SosThreadRunning;
 
-    // disable interrupts as we don't want to be interrupted while we alter the thread list
-    //__cli();
     InsertTailList(&gThreadList, &pThr->Link);
-    //__sti();
     
     return pThr;
 }
@@ -59,13 +55,103 @@ SosTerminateCurrentThread(
 )
 {
     PTHREAD pThr = (PTHREAD)__readfs();
-    printf("%x\n", pThr);
 
     // will be cleanup-ed by the scheduler
     pThr->State = SosThreadTerminated;
-    //__cli();
+
     while (TRUE)
     {
         __halt();
+    }
+}
+
+
+VOID
+SosThreadSleep(
+    DWORD NumberOfSeconds
+)
+{
+    PTHREAD pThr = (PTHREAD)__readfs();
+ 
+    __cli();
+    pThr->State = SosThreadSleeping;
+    pThr->SleepSeconds = NumberOfSeconds;
+    __sti();
+
+    while (pThr->State == SosThreadSleeping)
+    {
+        __halt();
+    }
+}
+
+
+VOID
+SosThreadWaitForEvent(
+    PEVENT Event
+)
+{
+    PTHREAD pThr = (PTHREAD)__readfs();
+    
+wait_again:
+    __cli();
+    
+    if (Event->Signaled == 1)
+    {
+        Event->Signaled = 0;
+        __sti();
+        goto _already_signaled;
+    }
+
+    pThr->State = SosThreadWaiting;
+    pThr->WaitingEventId = Event->EventId;
+
+    __sti();
+    __halt();
+
+    __cli();
+    if (Event->Signaled == 0)
+    {
+        goto wait_again;
+    }
+
+    Event->Signaled = 0;
+    __sti();
+
+_already_signaled:
+    
+    return;
+}
+
+
+VOID
+SosThreadCreateEvent(
+    PEVENT Event
+)
+{
+    Event->Signaled = 0;
+    Event->EventId = gEventId;
+    gEventId++;
+}
+
+
+VOID
+SosThreadSignalEvent(
+    PEVENT Event
+)
+{
+    LIST_ENTRY* list;
+
+    list = gThreadList.Flink;
+    Event->Signaled = 1;
+    while (list != &gThreadList)
+    {
+        PTHREAD pThr = (PTHREAD)CONTAINING_RECORD(list, THREAD, Link);
+
+        list = list->Flink;
+
+        if (pThr->State == SosThreadWaiting && pThr->WaitingEventId == Event->EventId)
+        {
+            pThr->State = SosThreadRunning;
+        }
     }
 }
