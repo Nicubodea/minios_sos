@@ -228,6 +228,7 @@
     <ClInclude Include="boot.h" />
     <ClInclude Include="console.h" />
     <ClInclude Include="defs.h" />
+    <ClInclude Include="fs.h" />
     <ClInclude Include="interrupt.h" />
     <ClInclude Include="interrupt_handlers.h" />
     <ClInclude Include="keyboard.h" />
@@ -247,6 +248,7 @@
     <ClCompile Include="apic.c" />
     <ClCompile Include="atapio.c" />
     <ClCompile Include="console.c" />
+    <ClCompile Include="fs.c" />
     <ClCompile Include="interrupt.c" />
     <ClCompile Include="interrupt_handlers.c" />
     <ClCompile Include="keyboard.c" />

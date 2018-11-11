@@ -11,19 +11,8 @@
 #include "atapio.h"
 #include "mmap.h"
 #include "threads.h"
+#include "fs.h"
 
-VOID
-printer(
-    PVOID arg
-)
-{
-    QWORD nr = (QWORD)arg;
-    for (DWORD i = 0; i < 5; i++)
-    {
-        SosThreadSleep(10);
-        printf("%x\n", nr);
-    }
-}
 
 VOID
 SosIdleThread(
@@ -103,9 +92,9 @@ SosEntryPoint(
 
     SosThreadInit();
 
-    SosThreadCreate(SosIdleThread, NULL);
+    SosFsInitFileSystem();
 
-    SosThreadCreate(printer, (PVOID)22);
+    SosThreadCreate(SosIdleThread, NULL);
 
     SosThreadCreate((PFUNC_ThrFunc)SosConsoleStartConsole, NULL);
 

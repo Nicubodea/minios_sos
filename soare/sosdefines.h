@@ -2,6 +2,8 @@
 #define _SOS_DEFINES_H_
 
 #pragma warning (disable: 4005)
+#pragma warning (disable: 4214)
+#pragma warning (disable: 4201)
 
 typedef void VOID;
 typedef unsigned char BYTE;

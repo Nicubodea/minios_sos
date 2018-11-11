@@ -59,6 +59,9 @@
     <ClCompile Include="lists.c">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="fs.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="boot.h">
@@ -116,6 +119,9 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="scheduler.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="fs.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
